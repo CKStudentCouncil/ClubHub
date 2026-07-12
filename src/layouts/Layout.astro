@@ -3,6 +3,7 @@ import Navbar from "@components/sections/Navbar.astro";
 import Footer from "@components/sections/Footer.astro";
 import SurveyWidget from "@components/ui/blocks/SurveyWidget";
 import Meta from "@components/Meta.astro";
+import PostHog from "@components/posthog.astro";
 import { SITE } from "@data/constants";
 import "@styles/global.css";
 import "@styles/map.css";
@@ -44,6 +45,8 @@ interface Props {
     />
 
     <title data-pagefind-meta="title">{title}</title>
+
+    <PostHog />
 
     <script is:inline>
       const isThemeDark =

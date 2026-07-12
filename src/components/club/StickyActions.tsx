@@ -8,6 +8,7 @@ import { LogosGoogleIcon } from '@components/ui/Icons'
 
 import { useAuth } from '@/scripts/useAuth';
 import { createDocument, deleteDocument, readDocument } from '@/firebase/services';
+import posthog from 'posthog-js';
 
 interface StickyActionsProps {
     clubCode: string;
@@ -62,7 +63,18 @@ export default function StickyActions({ clubCode, clubName, attendsExpo }: Stick
 
     }, [clubCode, user, isLoading]);
 
+    useEffect(() => {
+        if (user) {
+            posthog.identify(user.uid);
+        }
+    }, [user?.uid]);
+
     const handleToggleFavorite = () => {
+        posthog.capture('club_bookmarked', {
+            club_code: clubCode,
+            club_name: clubName,
+            action: isFavorite ? 'removed' : 'added',
+        });
         setFavorites(prev => {
             const newFavorites = new Set(prev);
             if (newFavorites.has(clubCode)) {
@@ -84,6 +96,7 @@ export default function StickyActions({ clubCode, clubName, attendsExpo }: Stick
         if (navigator.share) {
             try {
                 await navigator.share(shareData);
+                posthog.capture('club_link_shared', { club_code: clubCode, club_name: clubName, method: 'native_share' });
             } catch (err) {
                 console.error("Share failed:", err);
                 // createMsgDialog("分享失敗", "請嘗試手動複製連結", async () => {}, "了解")
@@ -91,6 +104,7 @@ export default function StickyActions({ clubCode, clubName, attendsExpo }: Stick
         } else {
             try {
                 await navigator.clipboard.writeText(window.location.href);
+                posthog.capture('club_link_shared', { club_code: clubCode, club_name: clubName, method: 'clipboard' });
             } catch (err) {
                 console.error('Failed to copy: ', err);
                 // createMsgDialog("分享失敗", "請嘗試手動複製連結", async () => {}, "了解")
@@ -101,6 +115,7 @@ export default function StickyActions({ clubCode, clubName, attendsExpo }: Stick
     const handleShowCard = () => {
         setIsShareCardLoading(true);
         setIsShareModalOpen(true);
+        posthog.capture('club_share_opened', { club_code: clubCode, club_name: clubName });
     };
 
     async function handleShareCard() {
@@ -119,12 +134,14 @@ export default function StickyActions({ clubCode, clubName, attendsExpo }: Stick
                     title: `社團分享卡片-${clubCode}`,
                     text: window.location.href,
                 });
+                posthog.capture('club_share_card_shared', { club_code: clubCode, club_name: clubName, method: 'native_share' });
             } else {
                 console.error('您的瀏覽器環境不支援分享圖片檔案，請手動下載');
                 createMsgDialog("分享失敗", "您的瀏覽器環境不支援分享圖片檔案，請嘗試直接下載圖片", async () => { }, "了解")
             }
         } catch (error) {
             console.error('分享失敗', error);
+            posthog.captureException(error instanceof Error ? error : new Error('Share card failed'));
             // createMsgDialog("分享失敗", "請嘗試直接下載圖片", async () => {}, "了解")
         }
         setIsLoadingShareImg(false)
@@ -137,7 +154,11 @@ export default function StickyActions({ clubCode, clubName, attendsExpo }: Stick
             return;
         }
 
-        await signIn();
+        const signedInUser = await signIn();
+        if (signedInUser) {
+            posthog.capture('user_signed_in', { method: 'google' });
+            posthog.identify(signedInUser.uid);
+        }
     };
 
 
@@ -163,11 +184,14 @@ export default function StickyActions({ clubCode, clubName, attendsExpo }: Stick
                     clubCode: clubCode,
                     createdAt: new Date(),
                 });
+                posthog.capture('club_liked', { club_code: clubCode, club_name: clubName, action: 'liked' });
             } else {
                 await deleteDocument('likes', likeDocId);
+                posthog.capture('club_liked', { club_code: clubCode, club_name: clubName, action: 'unliked' });
             }
         } catch (error) {
             console.error("Like/Unlike operation failed:", error);
+            posthog.captureException(error instanceof Error ? error : new Error('Like operation failed'));
             setIsLiked(originalLikeState.isLiked);
             setLikeCount(originalLikeState.likeCount);
         }
@@ -244,6 +268,7 @@ export default function StickyActions({ clubCode, clubName, attendsExpo }: Stick
                     <a
                         href={`/map?club=${clubCode}`}
                         rel="noopener noreferrer"
+                        onClick={() => posthog.capture('map_club_located', { club_code: clubCode, club_name: clubName })}
                         className="w-10 h-10 rounded-full  bg-accent-300/70 shadow-md flex items-center justify-center  hover:bg-accent-200/70 transition-colors duration-300 text-white"
                         aria-label="地圖位置"
                     >

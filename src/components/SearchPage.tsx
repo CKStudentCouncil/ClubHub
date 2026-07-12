@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
+import posthog from 'posthog-js';
 
 import type { Club } from '@/types/club';
 type ClubData = Club;
@@ -176,6 +177,13 @@ function SearchPage({ allClubs }: SearchPageProps) {
                         .filter((c) => !!c);
 
                     setSearchResults(clubsFromSearch);
+                    if (hasSearchTerm) {
+                        posthog.capture('club_searched', {
+                            query: searchQuery,
+                            result_count: clubsFromSearch.length,
+                            has_filters: hasFilters,
+                        });
+                    }
 
                     setTimeout(() => {
                         // @ts-ignore
@@ -259,6 +267,17 @@ function SearchPage({ allClubs }: SearchPageProps) {
         });
     }, [setFavorites]);
 
+    const handleSelectClub = useCallback((club: ClubWithSearchContext | null) => {
+        if (club) {
+            posthog.capture('club_detail_viewed', {
+                club_code: club.clubCode,
+                club_name: club.name,
+                from_search: isSearching,
+            });
+        }
+        setSelectedClub(club);
+    }, [isSearching]);
+
     const handleToggleFilter = useCallback((filterType: 'other' | 'tag' | 'members', value: string) => {
         setActiveFilters(prev => {
             const currentValues = prev[filterType] || [];
@@ -277,6 +296,12 @@ function SearchPage({ allClubs }: SearchPageProps) {
             if (newValues.length === 0) {
                 delete newFilters[filterType];
             }
+
+            posthog.capture('club_filter_applied', {
+                filter_type: filterType,
+                filter_value: value,
+                action: currentValues.includes(value) ? 'removed' : 'added',
+            });
 
             return newFilters;
         });
@@ -443,7 +468,7 @@ function SearchPage({ allClubs }: SearchPageProps) {
                                         club={club}
                                         isFavorite={isClient ? favorites.has(club.clubCode) : false}
                                         onToggleFavorite={handleToggleFavorite}
-                                        onClick={setSelectedClub}
+                                        onClick={handleSelectClub}
                                     />
                                 </motion.div>
                             ))}

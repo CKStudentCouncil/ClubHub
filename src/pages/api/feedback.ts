@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { addDocument } from '../../firebase/services'; 
+import { addDocument } from '../../firebase/services';
+import { getPostHogServer } from '../../lib/posthog-server';
 
 export const prerender = false;
 
@@ -28,6 +29,20 @@ export const POST: APIRoute = async ({ request }) => {
         };
 
         await addDocument('feedbackSubmissions', dataToSubmit);
+
+        const posthog = getPostHogServer();
+        const distinctId = request.headers.get('X-PostHog-Distinct-Id') || 'anonymous';
+        const sessionId = request.headers.get('X-PostHog-Session-Id');
+        posthog.capture({
+            distinctId,
+            event: 'feedback_submitted',
+            properties: {
+                feedback_type: type,
+                page_url: pageUrl,
+                $session_id: sessionId || undefined,
+            },
+        });
+        await posthog.flush();
 
         if (GAS_WEB_APP_URL) {
             const params = new URLSearchParams({

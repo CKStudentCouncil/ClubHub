@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { addDocument } from '../../firebase/services';
+import { getPostHogServer } from '../../lib/posthog-server';
 
 export const prerender = false;
 
@@ -26,6 +27,22 @@ export const POST: APIRoute = async ({ request }) => {
         };
 
         await addDocument('surveyResponses', dataToSubmit);
+
+        const posthog = getPostHogServer();
+        const distinctId = request.headers.get('X-PostHog-Distinct-Id') || 'anonymous';
+        const sessionId = request.headers.get('X-PostHog-Session-Id');
+        posthog.capture({
+            distinctId,
+            event: 'survey_submitted',
+            properties: {
+                school: surveyData.school,
+                grade: surveyData.grade,
+                attended_fair: surveyData.attendedFair,
+                attended_exhibition: surveyData.attendedExhibition,
+                $session_id: sessionId || undefined,
+            },
+        });
+        await posthog.flush();
 
         return new Response(
             JSON.stringify({ message: "問卷提交成功" }),

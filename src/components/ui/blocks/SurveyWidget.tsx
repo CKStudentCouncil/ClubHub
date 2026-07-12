@@ -204,9 +204,14 @@ function SurveyForm({ onComplete, onDismiss, onRemindLater }: {
         };
 
         try {
+            const ph = (window as any).posthog;
             const response = await fetch('/api/survey', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-PostHog-Distinct-Id': ph?.get_distinct_id?.() || 'anonymous',
+                    'X-PostHog-Session-Id': ph?.get_session_id?.() || '',
+                },
                 body: JSON.stringify(submissionData),
             });
             if (!response.ok) throw new Error('提交失敗');

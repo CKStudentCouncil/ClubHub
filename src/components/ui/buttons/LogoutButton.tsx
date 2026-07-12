@@ -1,11 +1,14 @@
 import { LogosGoogleIcon } from '@components/ui/Icons'
 import { useAuth } from '@/scripts/useAuth';
+import posthog from 'posthog-js';
 
 
 function LogoutButton() {
     const { user, isLoading, signOut } = useAuth();
 
     const handleClearAuth = async () => {
+        posthog.capture('user_signed_out');
+        posthog.reset();
         await signOut();
         console.log("Client-side authentication cleared.");
     };

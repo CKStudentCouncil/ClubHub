@@ -73,10 +73,13 @@ function FeedbackWidget() {
         };
 
         try {
+            const ph = (window as any).posthog;
             const response = await fetch('/api/feedback', { // API 路由
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-PostHog-Distinct-Id': ph?.get_distinct_id?.() || 'anonymous',
+                    'X-PostHog-Session-Id': ph?.get_session_id?.() || '',
                 },
                 body: JSON.stringify(payload), // 將數據作為 JSON body 發送
             });
