@@ -11,16 +11,6 @@ const { w } = Astro.props;
 ---
 
 <div class="relative" style={`width: ${w}px;`}>
-  <img
-    src={BrightLogo}
-    alt="Brand Logo"
-    class="h-auto theme-light-only"
-    style={`width: ${w}px;`}
-  />
-  <img
-    src={DarkLogo}
-    alt="Brand Logo"
-    class="h-auto theme-dark-only"
-    style={`width: ${w}px;`}
-  />
+  <img src={BrightLogo} alt="Brand Logo" class="h-auto theme-light-only" style={`width: ${w}px;`} />
+  <img src={DarkLogo} alt="Brand Logo" class="h-auto theme-dark-only" style={`width: ${w}px;`} />
 </div>

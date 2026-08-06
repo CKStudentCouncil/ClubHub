@@ -29,8 +29,8 @@ const ogTitle = customOgTitle || OG.title;
 const ogDescription = customOgDescription || pageDescription;
 const imageSource = customOgImage || OG.image;
 
-const siteURL = new URL(Astro.site || "https://club.cksc.tw"); 
-const pageURL = new URL(Astro.url.pathname, siteURL); 
+const siteURL = new URL(Astro.site || "https://club.cksc.tw");
+const pageURL = new URL(Astro.url.pathname, siteURL);
 
 const author = SITE.author;
 const socialImageRes = await getImage({
@@ -81,22 +81,11 @@ const maskableIcon = await getImage({
 });
 ---
 
-{
-  structuredData && (
-    <script
-      type="application/ld+json"
-      is:inline
-      set:html={JSON.stringify(structuredData)}
-    />
-  )
-}
+{structuredData && <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />}
 <meta charset="utf-8" />
 <meta name="description" content={pageDescription} />
 <meta name="web_author" content={author} />
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0"
-/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0" />
 <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 <link rel="canonical" href={pageURL.href} />
 <Fragment set:html={alternateLanguageLinks} />
@@ -108,10 +97,7 @@ const maskableIcon = await getImage({
 <meta property="og:type" content="website" />
 <meta property="og:title" content={ogTitle} />
 
-<meta
-  property="og:site_name"
-  content={SITE.title || "CKClubHub 建中社團資料庫"}
-/>
+<meta property="og:site_name" content={SITE.title || "CKClubHub 建中社團資料庫"} />
 <meta property="og:description" content={ogDescription} />
 <meta property="og:image" content={socialImage} />
 <link rel="image_src" href={socialImage} />
@@ -144,8 +130,5 @@ const maskableIcon = await getImage({
   href="https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Noto+Sans+TC:wght@100..900&display=swap"
   rel="stylesheet"
 />
-<meta
-  name="google-site-verification"
-  content="hkysiqX-KKxrqbBumyx8EiEtvDKafzo6X9f4jJDsF_Q"
-/>
+<meta name="google-site-verification" content="hkysiqX-KKxrqbBumyx8EiEtvDKafzo6X9f4jJDsF_Q" />
 <meta name="msvalidate.01" content="CCE13A65EDB87C26AC68E6F14331EE7F" />

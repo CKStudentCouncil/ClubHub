@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/scripts/useAuth';
-import { getFunctions, httpsCallable } from 'firebase/functions';
-import { triggerSignIn } from '../../../firebase/services'
-
+import { useState, useEffect } from "react";
+import { useAuth } from "@/scripts/useAuth";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { triggerSignIn } from "../../../firebase/services";
 
 // 定義從後端獲取的數據類型
 interface Statistics {
@@ -40,9 +39,9 @@ export default function FeedbackDashboard() {
         const fetchDashboardData = async () => {
             try {
                 const functions = getFunctions();
-                const getDashboardData = httpsCallable(functions, 'getAdminDashboardData');
+                const getDashboardData = httpsCallable(functions, "getAdminDashboardData");
                 const result = await getDashboardData();
-                const data = result.data as { statistics: Statistics, latestFeedback: FeedbackItem[] };
+                const data = result.data as { statistics: Statistics; latestFeedback: FeedbackItem[] };
 
                 setStats(data.statistics);
                 setLatestFeedback(data.latestFeedback);
@@ -53,13 +52,11 @@ export default function FeedbackDashboard() {
                         // @ts-ignore
                         window.lenis.resize();
                     }
-
                 }, 100);
-
             } catch (e) {
                 console.error(e);
                 if (typeof e === "string") {
-                    e.toUpperCase()
+                    e.toUpperCase();
                     setError(e.toUpperCase() || "載入數據失敗，您可能沒有權限。");
                 } else if (e instanceof Error) {
                     setError(e.message || "載入數據失敗，您可能沒有權限。");
@@ -78,30 +75,29 @@ export default function FeedbackDashboard() {
         setError(null);
         try {
             const functions = getFunctions();
-            const exportCsv = httpsCallable(functions, 'exportFeedbackAsCsv');
+            const exportCsv = httpsCallable(functions, "exportFeedbackAsCsv");
             const result = await exportCsv();
             const csvString = (result.data as { csv: string }).csv;
 
             if (!csvString) {
-                console.log("沒有數據可供導出。")
+                console.log("沒有數據可供導出。");
                 return;
             }
 
             // 創建並觸發下載
-            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
             const link = document.createElement("a");
             const url = URL.createObjectURL(blob);
             link.setAttribute("href", url);
-            link.setAttribute("download", `feedback_export_${new Date().toISOString().split('T')[0]}.csv`);
-            link.style.visibility = 'hidden';
+            link.setAttribute("download", `feedback_export_${new Date().toISOString().split("T")[0]}.csv`);
+            link.style.visibility = "hidden";
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-
         } catch (e) {
             console.error(e);
             if (typeof e === "string") {
-                e.toUpperCase()
+                e.toUpperCase();
                 setError(e.toUpperCase() || "導出失敗。");
             } else if (e instanceof Error) {
                 setError(e.message || "導出失敗。");
@@ -112,16 +108,27 @@ export default function FeedbackDashboard() {
     };
 
     if (isFetching) return <div className="p-8 min-h-[60vh] text-center">正在載入儀表板數據...</div>;
-    if (!user) return <div className="p-8 min-h-[60vh] text-center text-red-500">請先 <button className=' underline underline-offset-2 cursor-pointer' onClick={async () => {
-        const user = await triggerSignIn();
-        if (user) {
-            window.location.reload();
-        } else {
-            console.log("登入失敗")
-            // alert();
-        }
-
-    }}>登入</button>以查看此頁面</div>
+    if (!user)
+        return (
+            <div className="p-8 min-h-[60vh] text-center text-red-500">
+                請先{" "}
+                <button
+                    className=" underline underline-offset-2 cursor-pointer"
+                    onClick={async () => {
+                        const user = await triggerSignIn();
+                        if (user) {
+                            window.location.reload();
+                        } else {
+                            console.log("登入失敗");
+                            // alert();
+                        }
+                    }}
+                >
+                    登入
+                </button>
+                以查看此頁面
+            </div>
+        );
     if (error) return <div className="p-8 min-h-[60vh] text-center text-red-500">{error}</div>;
     if (!stats) return <div className="p-8 min-h-[60vh] text-center">沒有可顯示的數據。</div>;
 
@@ -134,7 +141,7 @@ export default function FeedbackDashboard() {
                     disabled={isExporting}
                     className="bg-accent-500 text-white font-bold py-2 px-4 rounded hover:bg-accent-600 disabled:bg-gray-400 transition-colors"
                 >
-                    {isExporting ? '正在導出...' : '下載所有資料 (.csv)'}
+                    {isExporting ? "正在導出..." : "下載所有資料 (.csv)"}
                 </button>
             </div>
             <p className="mb-8 text-lg">
@@ -146,36 +153,43 @@ export default function FeedbackDashboard() {
                 <div className="bg-primary-50 p-6 rounded-lg">
                     <h2 className="text-xl font-semibold mb-4">類型分佈</h2>
                     <ul>
-                        {Object.entries(stats.typeCounts).sort(([, a], [, b]) => b - a).map(([type, count]) => (
-                            <li key={type} className="flex justify-between py-1">
-                                <span>{type}</span>
-                                <span className="font-mono">{count}</span>
-                            </li>
-                        ))}
+                        {Object.entries(stats.typeCounts)
+                            .sort(([, a], [, b]) => b - a)
+                            .map(([type, count]) => (
+                                <li key={type} className="flex justify-between py-1">
+                                    <span>{type}</span>
+                                    <span className="font-mono">{count}</span>
+                                </li>
+                            ))}
                     </ul>
                 </div>
                 <div className="bg-primary-50 p-6 rounded-lg">
                     <h2 className="text-xl font-semibold mb-4">頁面分佈</h2>
                     <ul>
-                        {Object.entries(stats.pageUrlCounts).sort(([, a], [, b]) => b - a).map(([page, count]) => (
-                            <li key={page} className="flex justify-between py-1 text-sm break-all">
-                                <span>{page}</span>
-                                <span className="font-mono ml-4 shrink-0">{count}</span>
-                            </li>
-                        ))}
+                        {Object.entries(stats.pageUrlCounts)
+                            .sort(([, a], [, b]) => b - a)
+                            .map(([page, count]) => (
+                                <li key={page} className="flex justify-between py-1 text-sm break-all">
+                                    <span>{page}</span>
+                                    <span className="font-mono ml-4 shrink-0">{count}</span>
+                                </li>
+                            ))}
                     </ul>
                 </div>
             </div>
 
             {/* 最新 10 條數據表格 */}
             <h2 className="text-2xl font-bold mt-12 mb-4">最新 10 筆回饋</h2>
-            <div className="w-full overflow-x-auto bg-primary-50 rounded-lg no-scrollbar " onWheel={(e) => {
-                if (e.deltaY !== 0 && e.shiftKey) {
-                    e.stopPropagation();
-                    // @ts-ignore
-                    e.target.scrollLeft += e.deltaY;
-                }
-            }}>
+            <div
+                className="w-full overflow-x-auto bg-primary-50 rounded-lg no-scrollbar "
+                onWheel={(e) => {
+                    if (e.deltaY !== 0 && e.shiftKey) {
+                        e.stopPropagation();
+                        // @ts-ignore
+                        e.target.scrollLeft += e.deltaY;
+                    }
+                }}
+            >
                 <table className="w-full text-sm text-left text-primary-700">
                     <thead className="text-base text-primary-800 uppercase bg-primary-50 sticky top-0 border-b border-accent-500">
                         <tr>
@@ -188,17 +202,26 @@ export default function FeedbackDashboard() {
                     </thead>
                     <tbody>
                         {latestFeedback.map((fb) => (
-                            <tr key={fb.id} className="not-last:border-b border-neutral-100 hover:bg-primary-100/20 h-32">
-                                <td className="px-6 py-4 whitespace-nowrap">{new Date(fb.submittedAt).toLocaleString('zh-TW')}</td>
+                            <tr
+                                key={fb.id}
+                                className="not-last:border-b border-neutral-100 hover:bg-primary-100/20 h-32"
+                            >
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    {new Date(fb.submittedAt).toLocaleString("zh-TW")}
+                                </td>
                                 <td className="px-6 py-4">{fb.type}</td>
-                                <td className="px-6 py-4 max-w-sm min-w-72 wrap-break-word" title={fb.feedbackText}>{fb.feedbackText}</td>
-                                <td className="px-6 py-4 max-w-sm min-w-72 wrap-break-word" title={fb.pageUrl}>{fb.pageUrl}</td>
+                                <td className="px-6 py-4 max-w-sm min-w-72 wrap-break-word" title={fb.feedbackText}>
+                                    {fb.feedbackText}
+                                </td>
+                                <td className="px-6 py-4 max-w-sm min-w-72 wrap-break-word" title={fb.pageUrl}>
+                                    {fb.pageUrl}
+                                </td>
                                 <td className="px-6 py-4">{fb.userEmail}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
-        </div >
+        </div>
     );
 }

@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from "react";
 import { ChevronRight } from "lucide-react";
 
 interface Props {
@@ -47,10 +47,10 @@ function AutoPlayVideo({ src, poster, ctaText, ctaLink }: Props) {
         handleResize();
 
         const debouncedHandleResize = debounce(handleResize, 250);
-        window.addEventListener('resize', debouncedHandleResize);
+        window.addEventListener("resize", debouncedHandleResize);
 
         return () => {
-            window.removeEventListener('resize', debouncedHandleResize);
+            window.removeEventListener("resize", debouncedHandleResize);
         };
     }, []);
 
@@ -63,12 +63,12 @@ function AutoPlayVideo({ src, poster, ctaText, ctaLink }: Props) {
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {
-                    videoElement.play().catch(error => {
+                    videoElement.play().catch((error) => {
                         console.error("Video autoplay failed:", error);
                     });
                 } else {
                     videoElement.pause();
-                    setShowCTA(false)
+                    setShowCTA(false);
                 }
             },
             {
@@ -79,31 +79,26 @@ function AutoPlayVideo({ src, poster, ctaText, ctaLink }: Props) {
         const handlePlay = () => setIsPlaying(true);
         const handlePause = () => setIsPlaying(false);
 
-        videoElement.addEventListener('play', handlePlay);
-        videoElement.addEventListener('pause', handlePause);
+        videoElement.addEventListener("play", handlePlay);
+        videoElement.addEventListener("pause", handlePause);
 
         observer.observe(videoDivElement);
 
         return () => {
             if (videoElement) {
                 observer.unobserve(videoElement);
-                videoElement.removeEventListener('play', handlePlay);
-                videoElement.removeEventListener('pause', handlePause);
+                videoElement.removeEventListener("play", handlePlay);
+                videoElement.removeEventListener("pause", handlePause);
             }
         };
     }, [src, responsiveSettings]);
 
     return (
-        <section
-            onClick={() => setShowCTA(!showCTA)}
-            className=" overflow-x-hidden"
-            ref={videoDivRef}
-        >
+        <section onClick={() => setShowCTA(!showCTA)} className=" overflow-x-hidden" ref={videoDivRef}>
             <div
                 className=" relative -ml-[15%] w-[130%] md:w-full md:ml-0 aspect-video rounded-lg overflow-hidden group transform transition-transform duration-700"
                 style={{ transform: isPlaying ? "scale(1)" : `scale(${responsiveSettings.scale})` }}
             >
-
                 <video
                     ref={videoRef}
                     src={src}
@@ -118,7 +113,7 @@ function AutoPlayVideo({ src, poster, ctaText, ctaLink }: Props) {
     absolute inset-0 md:inset-[18%] bg-black/30 md:outline-[280px] md:outline-black/30
     flex flex-col items-center justify-center 
     transition-opacity duration-300
-    ${isPlaying ? (showCTA ? 'opacity-100' : 'opacity-0 hover:opacity-100') : 'opacity-100'}
+    ${isPlaying ? (showCTA ? "opacity-100" : "opacity-0 hover:opacity-100") : "opacity-100"}
     `}
                     onClick={() => {
                         if (!showCTA) {
@@ -127,8 +122,10 @@ function AutoPlayVideo({ src, poster, ctaText, ctaLink }: Props) {
                     }}
                 >
                     <div
-                        style={{ transform: !isPlaying ? `scale(${1 / responsiveSettings.scale - 0.1})` : "scale(1.2)" }}
-                        className=' transition-transform duration-700'
+                        style={{
+                            transform: !isPlaying ? `scale(${1 / responsiveSettings.scale - 0.1})` : "scale(1.2)",
+                        }}
+                        className=" transition-transform duration-700"
                     >
                         <a
                             href={ctaLink}
@@ -137,13 +134,11 @@ function AutoPlayVideo({ src, poster, ctaText, ctaLink }: Props) {
                             className={` text-base 
         bg-accent-500 hover:bg-accent-600 active:bg-accent-600 text-slate-100 ring-accent-800 
         inline-block h-12 py-2.5 pl-5 pr-3 rounded-lg transition-transform duration-300 hover:scale-105
-        ${(!showCTA && isPlaying) ? 'pointer-events-none group-hover:pointer-events-auto' : ''}
+        ${!showCTA && isPlaying ? "pointer-events-none group-hover:pointer-events-auto" : ""}
         `}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <span className="inline-block align-middle mb-0.5">
-                                {ctaText}
-                            </span>
+                            <span className="inline-block align-middle mb-0.5">{ctaText}</span>
                             <span className="inline-block align-middle">
                                 <ChevronRight />
                             </span>
@@ -153,6 +148,6 @@ function AutoPlayVideo({ src, poster, ctaText, ctaLink }: Props) {
             </div>
         </section>
     );
-};
+}
 
 export default AutoPlayVideo;

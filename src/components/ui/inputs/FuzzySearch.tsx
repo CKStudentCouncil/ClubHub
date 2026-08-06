@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { Search, X } from 'lucide-react';
+import { useState, useEffect, useRef } from "react";
+import { Search, X } from "lucide-react";
 
 interface FuzzySearchProps<T> {
     items: T[];
@@ -16,37 +16,37 @@ export default function FuzzySearch<T>({
     onSelect,
     displayRender,
     placeholder = "搜尋...",
-    className = ''
+    className = "",
 }: FuzzySearchProps<T>) {
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState("");
     const [results, setResults] = useState<T[]>([]);
     const [isFocused, setIsFocused] = useState(false);
     const searchInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         const trimmed = searchTerm.trim();
-        if (trimmed === '') {
+        if (trimmed === "") {
             setResults([]);
             return;
         }
 
         const keywords = trimmed.toLowerCase().split(/\s+/);
 
-        const filteredResults = items.filter(item => {
+        const filteredResults = items.filter((item) => {
             const mergedText = searchKeys
-                .map(key => {
+                .map((key) => {
                     const value = item[key];
                     if (key === "mapId") {
-                        return value + " " + (value as string).slice(5,(value as string).length).replace('-','')
+                        return value + " " + (value as string).slice(5, (value as string).length).replace("-", "");
                     }
-                    if (typeof value === 'string') return value;
-                    if (Array.isArray(value)) return value.join(' ');
-                    return '';
+                    if (typeof value === "string") return value;
+                    if (Array.isArray(value)) return value.join(" ");
+                    return "";
                 })
-                .join(' ')
+                .join(" ")
                 .toLowerCase();
 
-            return keywords.every(keyword => mergedText.includes(keyword));
+            return keywords.every((keyword) => mergedText.includes(keyword));
         });
 
         setResults(filteredResults);
@@ -72,7 +72,7 @@ export default function FuzzySearch<T>({
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
                 {searchTerm && (
                     <button
-                        onClick={() => setSearchTerm('')}
+                        onClick={() => setSearchTerm("")}
                         className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5"
                         aria-label="清除搜尋"
                     >
@@ -84,7 +84,7 @@ export default function FuzzySearch<T>({
             {isFocused && results.length > 0 && (
                 <ul className="absolute z-10 top-10 mt-2 w-full max-h-60 overflow-y-auto bg-accent-500 backdrop-blur-sm rounded-md shadow-lg transition-colors duration-300">
                     {results.map((item, index) => (
-                        <li key={index} className=' h-14'>
+                        <li key={index} className=" h-14">
                             <button
                                 onClick={() => handleSelect(item)}
                                 className="h-full w-full text-left px-4 py-2 hover:bg-accent-600"
@@ -95,16 +95,16 @@ export default function FuzzySearch<T>({
                     ))}
                 </ul>
             )}
-            {searchTerm && isFocused && results.length === 0 &&
+            {searchTerm && isFocused && results.length === 0 && (
                 <ul className="absolute z-10 top-10 mt-2 w-full max-h-60 overflow-y-auto bg-accent-500 backdrop-blur-sm rounded-md shadow-lg transition-colors duration-300">
-                    <li className='h-14' >
-                        <p className='h-full w-full text-left px-4 py-2 text-gray-700'>
-                            無符合結果
-                        </p>
+                    <li className="h-14">
+                        <p className="h-full w-full text-left px-4 py-2 text-gray-700">無符合結果</p>
                     </li>
                 </ul>
-            }
-            <div style={{ height: ((searchTerm && isFocused) ? Math.max(results.length, 1) * 3.5 + 0.3 : 0) + "rem" }} ></div>
+            )}
+            <div
+                style={{ height: (searchTerm && isFocused ? Math.max(results.length, 1) * 3.5 + 0.3 : 0) + "rem" }}
+            ></div>
         </div>
     );
 }

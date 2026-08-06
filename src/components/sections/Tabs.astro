@@ -16,17 +16,10 @@ import { Image } from "astro:assets";
 ---
 
 <section data-tabs-container class="pt-6 pb-4 relative">
-  <div
-    class="curved-background absolute inset-0 bg-[#242424] -z-10 pointer-events-none"
-  >
-  </div>
+  <div class="curved-background absolute inset-0 bg-[#242424] -z-10 pointer-events-none"></div>
   <Padding>
-    <div
-      class="grid md:grid-cols-[1.1fr_1fr] gap-12 lg:gap-14 xl:gap-24 h-full my-12 px-4 sm:px-6 lg:px-8"
-    >
-      <div
-        class="hidden md:block aspect-[3.5/4] xl:aspect-[4/3.5] overflow-hidden rounded-md"
-      >
+    <div class="grid md:grid-cols-[1.1fr_1fr] gap-12 lg:gap-14 xl:gap-24 h-full my-12 px-4 sm:px-6 lg:px-8">
+      <div class="hidden md:block aspect-[3.5/4] xl:aspect-[4/3.5] overflow-hidden rounded-md">
         {
           tabs.map((tab, index) => (
             <div
@@ -37,11 +30,7 @@ import { Image } from "astro:assets";
                 { panel: index !== 0 },
               ]}
             >
-              <Image
-                src={tab.image}
-                alt={tab.name}
-                class="w-full h-full object-cover "
-              />
+              <Image src={tab.image} alt={tab.name} class="w-full h-full object-cover " />
             </div>
           ))
         }
@@ -49,10 +38,7 @@ import { Image } from "astro:assets";
 
       <div>
         <div class="dark">
-          <h1
-            id={id}
-            class="mb-4 block text-balance text-3xl lg:text-4xl font-bold tracking-tight text-primary-800"
-          >
+          <h1 id={id} class="mb-4 block text-balance text-3xl lg:text-4xl font-bold tracking-tight text-primary-800">
             {title}
           </h1>
           <div class="flex border-b border-primary-800 md:justify-start">
@@ -73,9 +59,7 @@ import { Image } from "astro:assets";
               ))
             }
           </div>
-          <div
-            class="mt-4 w-full aspect-[4/3.5] overflow-hidden md:hidden rounded-md"
-          >
+          <div class="mt-4 w-full aspect-[4/3.5] overflow-hidden md:hidden rounded-md">
             {
               tabs.map((tab, index) => (
                 <div
@@ -88,11 +72,7 @@ import { Image } from "astro:assets";
                     },
                   ]}
                 >
-                  <Image
-                    src={tab.image}
-                    alt={tab.name}
-                    class="w-full h-full object-cover "
-                  />
+                  <Image src={tab.image} alt={tab.name} class="w-full h-full object-cover " />
                 </div>
               ))
             }

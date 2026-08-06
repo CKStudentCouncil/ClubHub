@@ -55,11 +55,7 @@ import { Menu, X } from "lucide-react";
       <div
         class="mt-5 flex flex-col gap-x-0 gap-y-4 py-1 md:mt-0 md:flex-row md:items-center md:justify-end md:gap-x-4 md:ps-7 lg:gap-x-7"
       >
-        {
-          Strings.navBarLinks.map((link) => (
-            <NavLink url={link.url} name={link.name} />
-          ))
-        }
+        {Strings.navBarLinks.map((link) => <NavLink url={link.url} name={link.name} />)}
         <div class="hidden pt-2 md:block md:ps-2 md:pt-0">
           <ThemeToggle client:load />
         </div>
@@ -74,8 +70,7 @@ import { Menu, X } from "lucide-react";
 
   if (hamburgerButton && navbarContainer) {
     hamburgerButton.addEventListener("click", () => {
-      const isExpanded =
-        hamburgerButton.getAttribute("aria-expanded") === "true";
+      const isExpanded = hamburgerButton.getAttribute("aria-expanded") === "true";
 
       hamburgerButton.setAttribute("aria-expanded", String(!isExpanded));
 
@@ -112,17 +107,10 @@ import { Menu, X } from "lucide-react";
   window.addEventListener("scroll", () => {
     const currentScrollY = window.scrollY;
     if (!header) return;
-    if (
-      currentScrollY > lastScrollY &&
-      currentScrollY > 50 &&
-      currentScrollY > lastShowY + 100
-    ) {
+    if (currentScrollY > lastScrollY && currentScrollY > 50 && currentScrollY > lastShowY + 100) {
       lastHideY = window.scrollY;
       header.style.transform = "translateY(-115%)";
-    } else if (
-      (currentScrollY < lastScrollY && currentScrollY < lastHideY - 100) ||
-      currentScrollY < 50
-    ) {
+    } else if ((currentScrollY < lastScrollY && currentScrollY < lastHideY - 100) || currentScrollY < 50) {
       lastShowY = window.scrollY;
       header.style.transform = "translateY(0)";
     }

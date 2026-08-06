@@ -19,15 +19,11 @@ interface Props {
 }
 ---
 
-<section
-  class="mx-auto max-w-[85rem] px-4 py-6 sm:px-6 lg:px-8 lg:py-10 2xl:max-w-full"
->
+<section class="mx-auto max-w-[85rem] px-4 py-6 sm:px-6 lg:px-8 lg:py-10 2xl:max-w-full">
   <div class="grid gap-10 md:grid-cols-5">
     <div class="md:col-span-2 mt-2 -mb-8">
       <div class="max-w-xs">
-        <h1
-          class="block text-balance text-3xl lg:text-4xl font-bold md:leading-tight"
-        >
+        <h1 class="block text-balance text-3xl lg:text-4xl font-bold md:leading-tight">
           <Fragment set:html={title} />
         </h1>
         <p class="mt-3 hidden text-neutral-700 md:block">
@@ -38,11 +34,7 @@ interface Props {
 
     <div class="md:col-span-3">
       <div>
-        {
-          faqs.faqs.map((faq, _) => (
-            <AccordionItem question={faq.question} answer={faq.answer} />
-          ))
-        }
+        {faqs.faqs.map((faq, _) => <AccordionItem question={faq.question} answer={faq.answer} />)}
       </div>
     </div>
   </div>

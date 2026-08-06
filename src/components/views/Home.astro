@@ -25,212 +25,169 @@ import Image from "astro/components/Image.astro";
 import type { Slide } from "@components/sections/EventCarousel.tsx";
 import type { CollectionEntry } from "astro:content";
 
-import {
-    TableOfContents,
-    Flag,
-    Gem,
-    CreditCard,
-    Map,
-    Stamp,
-} from "lucide-react";
+import { TableOfContents, Flag, Gem, CreditCard, Map, Stamp } from "lucide-react";
 
 const allEvents = await getCollection("events");
 
 const sortedEvents = allEvents.sort(
-    (a: CollectionEntry<"events">, b: CollectionEntry<"events">) =>
-        b.data.date.valueOf() - a.data.date.valueOf(),
+  (a: CollectionEntry<"events">, b: CollectionEntry<"events">) => b.data.date.valueOf() - a.data.date.valueOf()
 );
 
 const slidesForCarousel: Slide[] = await Promise.all(
-    sortedEvents.map(async (event) => {
-        const optimizedImage = await getImage({
-            src: event.data.image,
-            format: "avif",
-        });
-        return {
-            image: optimizedImage,
-            gradientStart: event.data.gradientStart,
-            gradientEnd: event.data.gradientEnd,
-            date: event.data.date,
-            link: event.data.link,
-            organizer: event.data.organizer,
-            description: event.body,
-            caption: event.data.title,
-            pageUrl: event.data.pageUrl,
-            slug: event.slug,
-        };
-    }),
+  sortedEvents.map(async (event) => {
+    const optimizedImage = await getImage({
+      src: event.data.image,
+      format: "avif",
+    });
+    return {
+      image: optimizedImage,
+      gradientStart: event.data.gradientStart,
+      gradientEnd: event.data.gradientEnd,
+      date: event.data.date,
+      link: event.data.link,
+      organizer: event.data.organizer,
+      description: event.body,
+      caption: event.data.title,
+      pageUrl: event.data.pageUrl,
+      slug: event.slug,
+    };
+  })
 );
 
 const faqs = {
-    subTitle: "以下是有關社博以及建中社團的常見問題",
-    faqs: [
-        {
-            question: "社團博覽會的具體時間是",
-            answer: "社團博覽會活動今年會在 08/22 13:30 左右開始",
-        },
-        {
-            question: "非建中新生可以參加社團博覽會嗎",
-            answer: "可以的，我們歡迎大家來了解建中社團",
-        },
-        {
-            question: "地社指的是什麼",
-            answer: "地社的全稱是地下社團，當動詞時指的是沒有在選社系統中選某個社團，但仍去參加該社團的活動（不同的社團對地社會有不同的接受程度哦）",
-        },
-        {
-            question: "社團聯展又是什麼",
-            answer: "社團聯展可以說是動態的社團博覽會，同樣在 08/22 舉行，會邀請建中校內的動態社團像是舞社、音樂社性團等等來表演。16:20在夢紅樓展演廳開放入場，歡迎前來觀賞 ",
-        },
-        {
-            question: "選社時間是什麼時候",
-            answer: "尚未公告",
-        },
-        {
-            question: "建中社團是什麼？",
-            answer: "建中社團是本校極具特色且蓬勃發展的學生組織，由學務處社團活動組專責管理。學社日常業務包含社團成立審核、社課教室安排、活動企劃書與保險審核、場地借用及校外比賽報名等。我們相信社團不只是玩樂，更是全腦的潛能開發，能夠有效培養學生的「企劃力」、「溝通力」、「執行力」與「應變力」等四大核心能力，讓建中人在此學會經營組織、凝聚向心力並為自我行為負責，成為未來優秀的領導人才。",
-        },
-        {
-            question: "建中社團有什麼類型？",
-            answer: "建中目前擁有約 69 個社團，主要分為五大類型：\n1. 學術性：以學術研究為目的之社團。\n2. 才藝性：以表演、技藝或欣賞為目的之社團。\n3. 服務性：以推展志願服務為目的之社團。\n4. 音樂性：以倡導音樂之演出與欣賞、愉悅身心為目的之社團。\n5. 體能性：以體能鍛鍊、提升體育技術為目的之社團。",
-        },
-        {
-            question: "建中社團有什麼特色？",
-            answer: "建中社團的最大特色在於「高度的學生自治」與「多元蓬勃的發展」！在自由開放的校風中，建中學子自主經營組織並辦理各項高難度活動。透過定期與不定期的成果發表、跨校聯合活動以及國際性的競賽交流，不僅提供了展現才藝、開發潛能、人際互動與生涯探索的絕佳平台，更處處展現紅樓學子靈動的生命力！",
-        },
-    ],
+  subTitle: "以下是有關社博以及建中社團的常見問題",
+  faqs: [
+    {
+      question: "社團博覽會的具體時間是",
+      answer: "社團博覽會活動今年會在 08/22 13:30 左右開始",
+    },
+    {
+      question: "非建中新生可以參加社團博覽會嗎",
+      answer: "可以的，我們歡迎大家來了解建中社團",
+    },
+    {
+      question: "地社指的是什麼",
+      answer:
+        "地社的全稱是地下社團，當動詞時指的是沒有在選社系統中選某個社團，但仍去參加該社團的活動（不同的社團對地社會有不同的接受程度哦）",
+    },
+    {
+      question: "社團聯展又是什麼",
+      answer:
+        "社團聯展可以說是動態的社團博覽會，同樣在 08/22 舉行，會邀請建中校內的動態社團像是舞社、音樂社性團等等來表演。16:20在夢紅樓展演廳開放入場，歡迎前來觀賞 ",
+    },
+    {
+      question: "選社時間是什麼時候",
+      answer: "尚未公告",
+    },
+    {
+      question: "建中社團是什麼？",
+      answer:
+        "建中社團是本校極具特色且蓬勃發展的學生組織，由學務處社團活動組專責管理。學社日常業務包含社團成立審核、社課教室安排、活動企劃書與保險審核、場地借用及校外比賽報名等。我們相信社團不只是玩樂，更是全腦的潛能開發，能夠有效培養學生的「企劃力」、「溝通力」、「執行力」與「應變力」等四大核心能力，讓建中人在此學會經營組織、凝聚向心力並為自我行為負責，成為未來優秀的領導人才。",
+    },
+    {
+      question: "建中社團有什麼類型？",
+      answer:
+        "建中目前擁有約 69 個社團，主要分為五大類型：\n1. 學術性：以學術研究為目的之社團。\n2. 才藝性：以表演、技藝或欣賞為目的之社團。\n3. 服務性：以推展志願服務為目的之社團。\n4. 音樂性：以倡導音樂之演出與欣賞、愉悅身心為目的之社團。\n5. 體能性：以體能鍛鍊、提升體育技術為目的之社團。",
+    },
+    {
+      question: "建中社團有什麼特色？",
+      answer:
+        "建中社團的最大特色在於「高度的學生自治」與「多元蓬勃的發展」！在自由開放的校風中，建中學子自主經營組織並辦理各項高難度活動。透過定期與不定期的成果發表、跨校聯合活動以及國際性的競賽交流，不僅提供了展現才藝、開發潛能、人際互動與生涯探索的絕佳平台，更處處展現紅樓學子靈動的生命力！",
+    },
+  ],
 };
 
 const testTabs = [
-    {
-        name: "束口袋",
-        description: "黑色的束口袋，方便收納各種小物，是社團聯展的紀念品！",
-        image: Bag,
-    },
-    {
-        name: "徽章",
-        description:
-            "專屬於社團博覽會的獨一無二徽章，金屬材質自帶高級感，是集章活動的紀念品之一",
-        image: Badge,
-    },
-    {
-        name: "悠遊卡套",
-        description:
-            "同樣是集章活動紀念品的卡套，是新拿到的學生證最好的收納方式！",
-        image: Card,
-    },
+  {
+    name: "束口袋",
+    description: "黑色的束口袋，方便收納各種小物，是社團聯展的紀念品！",
+    image: Bag,
+  },
+  {
+    name: "徽章",
+    description: "專屬於社團博覽會的獨一無二徽章，金屬材質自帶高級感，是集章活動的紀念品之一",
+    image: Badge,
+  },
+  {
+    name: "悠遊卡套",
+    description: "同樣是集章活動紀念品的卡套，是新拿到的學生證最好的收納方式！",
+    image: Card,
+  },
 ];
 ---
 
 <Padding>
-    <Hero
-        title='建中出才子，才子躍<span class="text-accent-300 ">社團</span>！'
-        subTitle="探索超過 50 個精彩社團"
-        imgAlt="建中紅樓"
-        imgSrc={CKRed}
-        SectionId="hero"
-        primaryBtn="社團博覽會"
-        primaryBtnURL="#fair"
-        secondaryBtn="社團資料庫"
-        secondaryBtnURL="/clubs"
-    />
+  <Hero
+    title='建中出才子，才子躍<span class="text-accent-300 ">社團</span>！'
+    subTitle="探索超過 50 個精彩社團"
+    imgAlt="建中紅樓"
+    imgSrc={CKRed}
+    SectionId="hero"
+    primaryBtn="社團博覽會"
+    primaryBtnURL="#fair"
+    secondaryBtn="社團資料庫"
+    secondaryBtnURL="/clubs"
+  />
 </Padding>
 
 <Padding>
-    <EventCarousel id="event" slides={slidesForCarousel} client:visible />
+  <EventCarousel id="event" slides={slidesForCarousel} client:visible />
 </Padding>
 
 <Padding>
-    <News id="news" client:visible />
+  <News id="news" client:visible />
 </Padding>
 
-<BigSection
-    id="fair"
-    title=" 社團博覽會介紹"
-    describe="今年的社團博覽會規劃了集章活動！以下是活動的詳細辦法">
-    <BasicCard title="簡介">
-        <TableOfContents
-            slot="icon"
-            className=" text-primary-600 dark:text-primary-900 w-6 h-6"
-        />
-        社團博覽會是指在新生訓練的第二天下午，全校幾乎所有的社團都會在自己的攤位擺出最吸引人的作品，吸引學弟們的目光。
-    </BasicCard>
-    <BasicCard title="目的">
-        <Flag
-            slot="icon"
-            className=" text-primary-600 dark:text-primary-900 w-6 h-6"
-        />
-        除了讓社團介紹自己給新生外，社團也會藉此機會宣傳，廣發傳單來壯大自己的社團規模。
-    </BasicCard>
-    <BasicCard title="今年的特別之處">
-        <Gem
-            slot="icon"
-            className=" text-primary-600 dark:text-primary-900 w-6 h-6"
-        />
-        今年相較於往年單純的博覽會，新增了集章卡的活動。新生們會拿到一張有五個空格的集章卡，參展的社團也會依照攤位位置或性質分別保管五種印章中的其中一種。新生只需要持集章卡分別蒐集到五種印章後即可至班聯會攤位兌換限量紀念品！
-        <div
-            class="mt-1 text-sm text-primary-500 dark:text-primary-950 dark:opacity-95">
-            今年為此集章活動第一屆，暫時只開放建中新生參加，請見諒
-        </div>
-    </BasicCard>
-    <BasicCard title="集章活動說明">
-        <Gem
-            slot="icon"
-            className=" text-primary-600 dark:text-primary-900 w-6 h-6"
-        />
-        集章完成後可以至夢紅樓一樓兌換紀念品，紀念品限量發放，發完為止。紀念品兌換時間預定為13:50~16:30，班聯會得視紀念品兌換狀況調整時間。一張集章卡限兌換一個紀念品，集章卡僅發放給新生，不記名不補發。
-        <div class="py-2">
-            <PrimaryCTA title="查看紀念品兌換位置" url="/map/?p=club-y-17" />
-        </div>
-    </BasicCard>
+<BigSection id="fair" title=" 社團博覽會介紹" describe="今年的社團博覽會規劃了集章活動！以下是活動的詳細辦法">
+  <BasicCard title="簡介">
+    <TableOfContents slot="icon" className=" text-primary-600 dark:text-primary-900 w-6 h-6" />
+    社團博覽會是指在新生訓練的第二天下午，全校幾乎所有的社團都會在自己的攤位擺出最吸引人的作品，吸引學弟們的目光。
+  </BasicCard>
+  <BasicCard title="目的">
+    <Flag slot="icon" className=" text-primary-600 dark:text-primary-900 w-6 h-6" />
+    除了讓社團介紹自己給新生外，社團也會藉此機會宣傳，廣發傳單來壯大自己的社團規模。
+  </BasicCard>
+  <BasicCard title="今年的特別之處">
+    <Gem slot="icon" className=" text-primary-600 dark:text-primary-900 w-6 h-6" />
+    今年相較於往年單純的博覽會，新增了集章卡的活動。新生們會拿到一張有五個空格的集章卡，參展的社團也會依照攤位位置或性質分別保管五種印章中的其中一種。新生只需要持集章卡分別蒐集到五種印章後即可至班聯會攤位兌換限量紀念品！
+    <div class="mt-1 text-sm text-primary-500 dark:text-primary-950 dark:opacity-95">
+      今年為此集章活動第一屆，暫時只開放建中新生參加，請見諒
+    </div>
+  </BasicCard>
+  <BasicCard title="集章活動說明">
+    <Gem slot="icon" className=" text-primary-600 dark:text-primary-900 w-6 h-6" />
+    集章完成後可以至夢紅樓一樓兌換紀念品，紀念品限量發放，發完為止。紀念品兌換時間預定為13:50~16:30，班聯會得視紀念品兌換狀況調整時間。一張集章卡限兌換一個紀念品，集章卡僅發放給新生，不記名不補發。
+    <div class="py-2">
+      <PrimaryCTA title="查看紀念品兌換位置" url="/map/?p=club-y-17" />
+    </div>
+  </BasicCard>
 
-    <BasicCard title="集章卡">
-        <CreditCard
-            slot="icon"
-            className=" text-primary-600 dark:text-primary-900 w-6 h-6"
-        />
-        <Image
-            src={CollectionCard}
-            alt={"集章卡（正面與背面）"}
-            class="rounded-md overflow-hidden"
-        />
-        <div class="mt-1">集章卡的正面與背面</div>
-    </BasicCard>
+  <BasicCard title="集章卡">
+    <CreditCard slot="icon" className=" text-primary-600 dark:text-primary-900 w-6 h-6" />
+    <Image src={CollectionCard} alt={"集章卡（正面與背面）"} class="rounded-md overflow-hidden" />
+    <div class="mt-1">集章卡的正面與背面</div>
+  </BasicCard>
 
-    <BasicCard title="社團分類地圖">
-        <Map
-            slot="icon"
-            className=" text-primary-600 dark:text-primary-900 w-6 h-6"
-        />
-        社團所保管的印章種類會標示在各社團攤位的專屬 QR code 上，也可以查看此網頁的線上社團地圖尋找想要了解的社團！
-        <div class="py-2">
-            <PrimaryCTA title="線上地圖連結" url="/map" />
-        </div>
-    </BasicCard>
+  <BasicCard title="社團分類地圖">
+    <Map slot="icon" className=" text-primary-600 dark:text-primary-900 w-6 h-6" />
+    社團所保管的印章種類會標示在各社團攤位的專屬 QR code 上，也可以查看此網頁的線上社團地圖尋找想要了解的社團！
+    <div class="py-2">
+      <PrimaryCTA title="線上地圖連結" url="/map" />
+    </div>
+  </BasicCard>
 
-    <BasicCard title="印章示意圖">
-        <Stamp
-            slot="icon"
-            className=" text-primary-600 dark:text-primary-900 w-6 h-6"
-        />
-        <Image
-            src={AllStamp}
-            alt={"集章卡"}
-            class="rounded-md overflow-hidden"
-        />
-    </BasicCard>
+  <BasicCard title="印章示意圖">
+    <Stamp slot="icon" className=" text-primary-600 dark:text-primary-900 w-6 h-6" />
+    <Image src={AllStamp} alt={"集章卡"} class="rounded-md overflow-hidden" />
+  </BasicCard>
 </BigSection>
 
 <Tabs tabs={testTabs} title="紀念品介紹" />
 
 <div>
-    <AutoPlayVideo
-        src={MapVideo}
-        ctaText="立刻查看社團地圖"
-        ctaLink="/map"
-        client:idle
-    />
+  <AutoPlayVideo src={MapVideo} ctaText="立刻查看社團地圖" ctaLink="/map" client:idle />
 </div>
 
 <Padding>
-    <FAQ title="常見問題" faqs={faqs} />
+  <FAQ title="常見問題" faqs={faqs} />
 </Padding>

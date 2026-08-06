@@ -1,6 +1,6 @@
-import type { APIRoute } from 'astro';
-import { addDocument } from '../../firebase/services';
-import { getPostHogServer } from '../../lib/posthog-server';
+import type { APIRoute } from "astro";
+import { addDocument } from "../../firebase/services";
+import { getPostHogServer } from "../../lib/posthog-server";
 
 export const prerender = false;
 
@@ -11,13 +11,10 @@ export const POST: APIRoute = async ({ request }) => {
         const { email, feedbackText, pageUrl, type } = await request.json();
 
         if (!email || !feedbackText) {
-            return new Response(
-                JSON.stringify({ message: "缺少必要欄位: email 和 feedbackText 為必填項。" }), 
-                { 
-                    status: 400,
-                    headers: { 'Content-Type': 'application/json' }
-                }
-            );
+            return new Response(JSON.stringify({ message: "缺少必要欄位: email 和 feedbackText 為必填項。" }), {
+                status: 400,
+                headers: { "Content-Type": "application/json" },
+            });
         }
 
         const dataToSubmit = {
@@ -25,17 +22,17 @@ export const POST: APIRoute = async ({ request }) => {
             feedbackText,
             pageUrl,
             type,
-            submittedAt: new Date(), 
+            submittedAt: new Date(),
         };
 
-        await addDocument('feedbackSubmissions', dataToSubmit);
+        await addDocument("feedbackSubmissions", dataToSubmit);
 
         const posthog = getPostHogServer();
-        const distinctId = request.headers.get('X-PostHog-Distinct-Id') || 'anonymous';
-        const sessionId = request.headers.get('X-PostHog-Session-Id');
+        const distinctId = request.headers.get("X-PostHog-Distinct-Id") || "anonymous";
+        const sessionId = request.headers.get("X-PostHog-Session-Id");
         posthog.capture({
             distinctId,
-            event: 'feedback_submitted',
+            event: "feedback_submitted",
             properties: {
                 feedback_type: type,
                 page_url: pageUrl,
@@ -47,9 +44,9 @@ export const POST: APIRoute = async ({ request }) => {
         if (GAS_WEB_APP_URL) {
             const params = new URLSearchParams({
                 email: email,
-                feedbackText: feedbackText, 
-                pageUrl: pageUrl || 'N/A',
-                type: type || 'General'     
+                feedbackText: feedbackText,
+                pageUrl: pageUrl || "N/A",
+                type: type || "General",
             });
 
             // 使用 context.waitUntil 可以確保它執行完畢，但為了簡單起見，直接 await 也可以
@@ -67,22 +64,15 @@ export const POST: APIRoute = async ({ request }) => {
             console.warn("未在環境變數中設定 PUBLIC_FEEDBACK_URL，跳過郵件發送。");
         }
 
-        return new Response(
-            JSON.stringify({ message: "回饋已成功接收" }), 
-            {
-                status: 201,
-                headers: { 'Content-Type': 'application/json' }
-            }
-        );
-
+        return new Response(JSON.stringify({ message: "回饋已成功接收" }), {
+            status: 201,
+            headers: { "Content-Type": "application/json" },
+        });
     } catch (error) {
         console.error("處理回饋 API 請求時發生錯誤:", error);
-        return new Response(
-            JSON.stringify({ message: "伺服器內部錯誤，請稍後再試" }), 
-            { 
-                status: 500,
-                headers: { 'Content-Type': 'application/json' }
-            }
-        );
+        return new Response(JSON.stringify({ message: "伺服器內部錯誤，請稍後再試" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+        });
     }
 };

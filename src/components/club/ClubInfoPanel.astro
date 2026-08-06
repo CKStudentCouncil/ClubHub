@@ -41,9 +41,7 @@ const { club } = Astro.props;
     <div slot="content" class="flex flex-wrap gap-1.5 pt-1">
       {
         club.tags.map((tag) => (
-          <span class="text-xs border border-accent-600 text-neutral-800 px-2 py-1 rounded-full">
-            {tag}
-          </span>
+          <span class="text-xs border border-accent-600 text-neutral-800 px-2 py-1 rounded-full">{tag}</span>
         ))
       }
     </div>
@@ -83,14 +81,10 @@ const { club } = Astro.props;
               {officer.name}
               {officer.contact && (
                 <>
-                  {!officer.contact.includes(":") &&
-                  !officer.contact.includes("：") ? (
+                  {!officer.contact.includes(":") && !officer.contact.includes("：") ? (
                     <a
                       class=" inline-block "
-                      href={
-                        "https://www.instagram.com/" +
-                        officer.contact.replaceAll("@", "")
-                      }
+                      href={"https://www.instagram.com/" + officer.contact.replaceAll("@", "")}
                       target="_blank"
                     >
                       <ExternalLink className=" w-4 inline-block -mt-1.5  text-accent-800" />
@@ -114,9 +108,7 @@ const { club } = Astro.props;
             <li class=" marker:text-transparent">
               <SocialIcon platform={link.platform} class=" w-5 h-5 inline-block" />
               {link.platform === "gmail" ? (
-                <p class="text-accent-800  dark:text-accent-300 inline">
-                  {link.handle}
-                </p>
+                <p class="text-accent-800  dark:text-accent-300 inline">{link.handle}</p>
               ) : (
                 <a
                   href={link.url}

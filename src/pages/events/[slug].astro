@@ -15,10 +15,7 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 
-const post: CollectionEntry<"events"> | undefined = await getEntry(
-  "events",
-  slug
-);
+const post: CollectionEntry<"events"> | undefined = await getEntry("events", slug);
 
 if (post === undefined) {
   return Astro.redirect("/404");
@@ -35,17 +32,13 @@ const { title, date, image, organizer, link, ctaTitle } = post.data;
   customOgImage={image}
   customOgDescription={post.body.slice(0, 30) + "..."}
 >
-  <article
-    class="prose prose-neutral dark:prose-invert max-w-3xl mx-auto py-8 px-4 sm:py-12"
-  >
+  <article class="prose prose-neutral dark:prose-invert max-w-3xl mx-auto py-8 px-4 sm:py-12">
     <h1 class="text-4xl font-bold mb-2 !text-primary-800">
       {title}
     </h1>
 
     <div class="flex flex-wrap items-center text-neutral-500 mb-4 gap-x-4">
-      <span
-        >舉辦單位：<strong class="text-primary-800">{organizer}</strong></span
-      >
+      <span>舉辦單位：<strong class="text-primary-800">{organizer}</strong></span>
       <time datetime={date.toISOString()}>
         {
           date.toLocaleDateString("en-US", {
@@ -61,11 +54,7 @@ const { title, date, image, organizer, link, ctaTitle } = post.data;
       <ExternalCTA title={ctaTitle} url={link} />
     </div>
 
-    <Image
-      src={image}
-      alt={`Cover image for ${title}`}
-      class="rounded-md mb-8 w-full h-auto object-cover"
-    />
+    <Image src={image} alt={`Cover image for ${title}`} class="rounded-md mb-8 w-full h-auto object-cover" />
 
     <div class="mt-8 my-10">
       <Content />

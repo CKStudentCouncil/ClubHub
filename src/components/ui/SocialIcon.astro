@@ -6,7 +6,7 @@ import {
   IcBaselineDiscord,
   MaterialSymbolsAttachFile,
   BxlGmail,
-  TablerBrandThreads
+  TablerBrandThreads,
 } from "./Icons";
 
 import type { JSX } from "react";
@@ -19,15 +19,14 @@ interface Props {
 
 const { platform, class: className } = Astro.props;
 
-const iconMap: Record<string, (props: SVGProps<SVGSVGElement>) => JSX.Element> =
-  {
-    instagram: MdiInstagram,
-    youtube: MdiYoutube,
-    line: Line,
-    discord: IcBaselineDiscord,
-    gmail: BxlGmail,
-    threads  : TablerBrandThreads
-  };
+const iconMap: Record<string, (props: SVGProps<SVGSVGElement>) => JSX.Element> = {
+  instagram: MdiInstagram,
+  youtube: MdiYoutube,
+  line: Line,
+  discord: IcBaselineDiscord,
+  gmail: BxlGmail,
+  threads: TablerBrandThreads,
+};
 
 const IconComponent = iconMap[platform] || MaterialSymbolsAttachFile;
 ---

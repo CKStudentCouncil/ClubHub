@@ -24,59 +24,53 @@ export const OtMapingInfoList: Record<string, OtMapingInfo> = {
     summary: "社團博覽會集章活動紀念品兌換處，集章活動開放給所有新生，活動辦法請見下方連結",
     slug: "/#fair",
   },
-  _SC2:{
+  _SC2: {
     summary: "社團聯合展演表演場地， 08/22 16:20 開始入場，地點就在夢紅樓展演廳，詳情請見下方連結",
     slug: "/exhibition",
-  }
+  },
 };
 
 const p = { summary: "此社團尚未提供詳細資訊。", slug: null, tags: [] };
 
-const clubsDataByCode = new globalThis.Map(
-  allClubsData.map((club) => [club.data.clubCode, club])
-);
+const clubsDataByCode = new globalThis.Map(allClubsData.map((club) => [club.data.clubCode, club]));
 
-const clubsForMap = Object.entries(clubMappings).map(
-  ([clubCode, mappingInfo]): ClubInfoForMap => {
-    if (clubCode.startsWith("_")) {
-      const clubData = clubsDataByCode.get(clubCode.slice(1));
-      return {
-        clubCode: clubCode.slice(1),
-        ...p,
-        ...mappingInfo,
-        ...(clubData && {
-          name: clubData.data.name,
-          summary: clubData.data.summary,
-          slug: clubData.slug,
-          tags: clubData.data.tags,
-        }),
-        ...OtMapingInfoList[clubCode],
-      } as ClubInfoForMap;
-    } else {
-      const clubData = clubsDataByCode.get(clubCode);
-      // console.log(clubData);
+const clubsForMap = Object.entries(clubMappings).map(([clubCode, mappingInfo]): ClubInfoForMap => {
+  if (clubCode.startsWith("_")) {
+    const clubData = clubsDataByCode.get(clubCode.slice(1));
+    return {
+      clubCode: clubCode.slice(1),
+      ...p,
+      ...mappingInfo,
+      ...(clubData && {
+        name: clubData.data.name,
+        summary: clubData.data.summary,
+        slug: clubData.slug,
+        tags: clubData.data.tags,
+      }),
+      ...OtMapingInfoList[clubCode],
+    } as ClubInfoForMap;
+  } else {
+    const clubData = clubsDataByCode.get(clubCode);
+    // console.log(clubData);
 
-      return {
-        clubCode: clubCode,
-        ...p,
-        ...mappingInfo,
-        ...(clubData && {
-          name: clubData.data.name,
-          summary: clubData.data.summary,
-          slug: clubData.slug,
-          tags: clubData.data.tags,
-        }),
-      } as ClubInfoForMap;
-    }
+    return {
+      clubCode: clubCode,
+      ...p,
+      ...mappingInfo,
+      ...(clubData && {
+        name: clubData.data.name,
+        summary: clubData.data.summary,
+        slug: clubData.slug,
+        tags: clubData.data.tags,
+      }),
+    } as ClubInfoForMap;
   }
-);
+});
 ---
 
 <Layout>
   <div class="text-center max-w-6xl mx-auto px-4 mt-12 sm:mt-12 md:mt-0">
-    <h1 class="text-4xl sm:text-5xl font-bold text-primary-800 mb-4">
-      社團博覽會地圖
-    </h1>
+    <h1 class="text-4xl sm:text-5xl font-bold text-primary-800 mb-4">社團博覽會地圖</h1>
     <p class="text-lg text-neutral-600">探索感興趣的社團！</p>
   </div>
   <InteractiveMap client:load clubs={clubsForMap} />

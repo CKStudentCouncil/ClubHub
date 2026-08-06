@@ -1,22 +1,22 @@
-import type { APIRoute } from 'astro';
-import { toString as qrCodeToString } from 'qrcode';
+import type { APIRoute } from "astro";
+import { toString as qrCodeToString } from "qrcode";
 
 import { satori } from "@cf-wasm/satori";
 // import { satori } from "@cf-wasm/satori/node";
 
-import { clubMappings } from '@data/clubFair';
-import { getCollection } from 'astro:content';
-import { SITE } from '@data/constants';
+import { clubMappings } from "@data/clubFair";
+import { getCollection } from "astro:content";
+import { SITE } from "@data/constants";
 
-import backgroundSvg from '@/assets/card-background.svg?raw';
-import s1 from '@/assets/stamps/s1.svg?raw';
-import s2 from '@/assets/stamps/s2.svg?raw';
-import s3 from '@/assets/stamps/s3.svg?raw';
-import s4 from '@/assets/stamps/s4.svg?raw';
-import s5 from '@/assets/stamps/s5.svg?raw';
+import backgroundSvg from "@/assets/card-background.svg?raw";
+import s1 from "@/assets/stamps/s1.svg?raw";
+import s2 from "@/assets/stamps/s2.svg?raw";
+import s3 from "@/assets/stamps/s3.svg?raw";
+import s4 from "@/assets/stamps/s4.svg?raw";
+import s5 from "@/assets/stamps/s5.svg?raw";
 
-import fontBoldUrl from '@/assets/NotoSansTC-Bold.ttf?url';
-import fontRegularUrl from '@/assets/NotoSansTC-Regular.ttf?url';
+import fontBoldUrl from "@/assets/NotoSansTC-Bold.ttf?url";
+import fontRegularUrl from "@/assets/NotoSansTC-Regular.ttf?url";
 
 export const prerender = false;
 
@@ -24,17 +24,29 @@ const mmToPx = (mm: number) => mm * 3.78;
 const toBase64Uri = (svgString: string) => {
     const base64 = btoa(unescape(encodeURIComponent(svgString)));
     return `data:image/svg+xml;base64,${base64}`;
-}
+};
 const backgroundDataUri = toBase64Uri(backgroundSvg);
-const stamps = [null, s1, s2, s3, s4, s5].map(svg => svg ? toBase64Uri(svg) : null);
+const stamps = [null, s1, s2, s3, s4, s5].map((svg) => (svg ? toBase64Uri(svg) : null));
 
 let fontBoldData: ArrayBuffer | null = null;
 let fontRegularData: ArrayBuffer | null = null;
 
 const getWeightedSliceIndex = (text: string, maxWeight: number): number => {
     const charWeights: { [key: string]: number } = {
-        '.': 0.375, ',': 0.375, ';': 0.375, ':': 0.375, '/': 0.46, '\\': 0.46,
-        '?': 0.54, '!': 0.415, '+': 0, " ": 0.375, '(': 0.42, ')': 0.42,'”':1.5,'“':1.5
+        ".": 0.375,
+        ",": 0.375,
+        ";": 0.375,
+        ":": 0.375,
+        "/": 0.46,
+        "\\": 0.46,
+        "?": 0.54,
+        "!": 0.415,
+        "+": 0,
+        " ": 0.375,
+        "(": 0.42,
+        ")": 0.42,
+        "”": 1.5,
+        "“": 1.5,
     };
     // 一排+應該是0.6但一個不知道為啥寫0是好的
 
@@ -64,44 +76,55 @@ const getWeightedSliceIndex = (text: string, maxWeight: number): number => {
 export const GET: APIRoute = async ({ request, locals }) => {
     try {
         const requestUrl = new URL(request.url);
-        const clubCode = requestUrl.searchParams.get('clubCode');
+        const clubCode = requestUrl.searchParams.get("clubCode");
 
-        const outputWidth = parseInt(requestUrl.searchParams.get('width') || '768', 10);
+        const outputWidth = parseInt(requestUrl.searchParams.get("width") || "768", 10);
 
         if (!clubCode) {
-            return new Response('Missing clubCode parameter', { status: 400 });
+            return new Response("Missing clubCode parameter", { status: 400 });
         }
 
-        const allClubs = await getCollection('clubs');
-        const clubContent = allClubs.find(club => club.slug.startsWith(clubCode.toLowerCase()));
+        const allClubs = await getCollection("clubs");
+        const clubContent = allClubs.find((club) => club.slug.startsWith(clubCode.toLowerCase()));
         const clubMapInfo = clubMappings[clubCode.toUpperCase()];
 
         if (!clubContent && !clubMapInfo) {
             return new Response(`Club data not found for ${clubCode}`, { status: 404 });
         }
 
-        const { name: clubName, summary } = clubContent ? clubContent.data : { name: clubMapInfo.name, summary: clubCode.toUpperCase() != "CK0" ? "此社團尚未提供詳細資訊。" : "建中班聯是建中最高學生自治組織，處理學生相關大小事。我們自己有厚達 189 頁的法規系統，有憲章、法律、命令的法位階概念；大家各司其職，依法行政，有的人負責爭取學權，也有人主責活動辦理，更有人專研司法律的裁決或審判。因為我們獨特的三權分立系統，有行政、立法、司法部門，所以運作之完善。廣義的建中班聯，範圍其實就是建中全校同學，而全校同學統一稱為班聯會「會員」，也就是說大家都是班聯會的一份子。" };
+        const { name: clubName, summary } = clubContent
+            ? clubContent.data
+            : {
+                  name: clubMapInfo.name,
+                  summary:
+                      clubCode.toUpperCase() != "CK0"
+                          ? "此社團尚未提供詳細資訊。"
+                          : "建中班聯是建中最高學生自治組織，處理學生相關大小事。我們自己有厚達 189 頁的法規系統，有憲章、法律、命令的法位階概念；大家各司其職，依法行政，有的人負責爭取學權，也有人主責活動辦理，更有人專研司法律的裁決或審判。因為我們獨特的三權分立系統，有行政、立法、司法部門，所以運作之完善。廣義的建中班聯，範圍其實就是建中全校同學，而全校同學統一稱為班聯會「會員」，也就是說大家都是班聯會的一份子。",
+              };
         const { mapId, stampId } = clubMapInfo ? clubMapInfo : { mapId: "club-無", stampId: 0 };
-        const shareUrl = clubContent ? `${SITE.url}clubs/${clubContent.slug}` : (clubCode.toUpperCase() != "CK0" ? (`${SITE.url}map?club=${clubCode}`) : `${SITE.url}cksc`);
+        const shareUrl = clubContent
+            ? `${SITE.url}clubs/${clubContent.slug}`
+            : clubCode.toUpperCase() != "CK0"
+              ? `${SITE.url}map?club=${clubCode}`
+              : `${SITE.url}cksc`;
 
         if (!fontBoldData) {
             const fullFontUrl = new URL(fontBoldUrl, requestUrl.origin);
-            fontBoldData = await fetch(fullFontUrl).then(res => res.arrayBuffer());
+            fontBoldData = await fetch(fullFontUrl).then((res) => res.arrayBuffer());
         }
         if (!fontRegularData) {
             const fullFontUrl = new URL(fontRegularUrl, requestUrl.origin);
-            fontRegularData = await fetch(fullFontUrl).then(res => res.arrayBuffer());
+            fontRegularData = await fetch(fullFontUrl).then((res) => res.arrayBuffer());
         }
 
-
         const qrCodeSvgString = await qrCodeToString(shareUrl, {
-            type: 'svg',
+            type: "svg",
             width: 768,
             margin: 0,
             color: {
                 dark: "#171e2a",
-                light: "#fcfcfc"
-            }
+                light: "#fcfcfc",
+            },
         });
         const qrCodeDataURL = toBase64Uri(qrCodeSvgString);
 
@@ -110,32 +133,32 @@ export const GET: APIRoute = async ({ request, locals }) => {
         const summaryLine1 = summary.slice(0, breakIndex1);
 
         const restOfSummary = summary.slice(breakIndex1);
-        const line2MaxWeight = 130 - 46 ;
+        const line2MaxWeight = 130 - 46;
         const breakIndex2 = getWeightedSliceIndex(restOfSummary, line2MaxWeight);
         let summaryLine2 = restOfSummary.slice(0, breakIndex2);
 
         if (restOfSummary.length > breakIndex2) {
-            summaryLine2 += '...';
+            summaryLine2 += "...";
         }
 
         const html = {
-            type: 'div',
+            type: "div",
             props: {
                 style: {
-                    display: 'flex',
-                    position: 'relative',
+                    display: "flex",
+                    position: "relative",
                     width: `${mmToPx(210)}px`,
                     height: `${mmToPx(297)}px`,
                     backgroundImage: `url("${backgroundDataUri}")`,
-                    backgroundSize: '100% 100%',
+                    backgroundSize: "100% 100%",
                 },
                 children: [
                     {
-                        type: 'img',
+                        type: "img",
                         props: {
                             src: qrCodeDataURL,
                             style: {
-                                position: 'absolute',
+                                position: "absolute",
                                 top: `${mmToPx(58.5)}px`,
                                 left: `${mmToPx(42.8)}px`,
                                 width: `${mmToPx(124.4)}px`,
@@ -144,83 +167,85 @@ export const GET: APIRoute = async ({ request, locals }) => {
                         },
                     },
                     {
-                        type: 'div',
+                        type: "div",
                         props: {
                             style: {
-                                position: 'absolute',
+                                position: "absolute",
                                 top: `${mmToPx(54)}px`,
                                 left: `${mmToPx(38)}px`,
                                 width: `${mmToPx(134)}px`,
                                 height: `${mmToPx(134)}px`,
-                                border: '19px solid #fcfcfc',
-                                borderRadius: '24px'
-                            }
-                        }
+                                border: "19px solid #fcfcfc",
+                                borderRadius: "24px",
+                            },
+                        },
                     },
                     {
-                        type: 'div',
+                        type: "div",
                         props: {
                             children: clubName,
                             style: {
-                                position: 'absolute',
+                                position: "absolute",
                                 top: `${mmToPx(9)}px`,
                                 left: `${mmToPx(70)}px`,
                                 width: `${mmToPx(136)}px`,
-                                fontSize: '68px',
-                                fontWeight: '700',
-                                lineHeight: '1.1',
-                                color: '#171e2a',
+                                fontSize: "68px",
+                                fontWeight: "700",
+                                lineHeight: "1.1",
+                                color: "#171e2a",
                                 letterSpacing: `${mmToPx(1)}px`,
                             },
                         },
                     },
                     {
-                        type: 'div',
+                        type: "div",
                         props: {
                             children: clubCode,
                             style: {
-                                position: 'absolute',
+                                position: "absolute",
                                 top: `${mmToPx(4)}px`,
                                 left: `${mmToPx(10)}px`,
-                                fontSize: '5rem',
-                                fontWeight: '700',
-                                color: '#ec9f65',
+                                fontSize: "5rem",
+                                fontWeight: "700",
+                                color: "#ec9f65",
                                 letterSpacing: `${mmToPx(1)}px`,
                             },
                         },
                     },
                     {
-                        type: 'div',
+                        type: "div",
                         props: {
-                            children: ["無", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ"][stampId] || '',
+                            children: ["無", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ"][stampId] || "",
                             style: {
-                                position: 'absolute',
+                                position: "absolute",
                                 top: `${mmToPx(190)}px`,
                                 left: `${mmToPx(189)}px`,
-                                fontSize: '2.6rem',
-                                fontWeight: '700',
-                                color: 'white',
+                                fontSize: "2.6rem",
+                                fontWeight: "700",
+                                color: "white",
                                 letterSpacing: `${mmToPx(1)}px`,
                             },
                         },
                     },
 
                     {
-                        type: 'div',
+                        type: "div",
                         props: {
-                            children: [stamps[stampId] && {
-                                type: 'img',
-                                props: {
-                                    src: stamps[stampId],
-                                    style: {
-                                        width: "100%",
+                            children: [
+                                stamps[stampId] && {
+                                    type: "img",
+                                    props: {
+                                        src: stamps[stampId],
+                                        style: {
+                                            width: "100%",
+                                        },
                                     },
                                 },
-                            }],
+                            ],
                             src: stamps[stampId],
                             style: {
-                                display: 'flex',
-                                position: 'absolute',
+                                display: "flex",
+                                position: "absolute",
                                 top: `${mmToPx(210)}px`,
                                 left: `${mmToPx(156)}px`,
                                 width: `${mmToPx(42)}px`,
@@ -229,70 +254,70 @@ export const GET: APIRoute = async ({ request, locals }) => {
                         },
                     },
                     {
-                        type: 'div',
+                        type: "div",
                         props: {
                             children: mapId.slice(5, mapId.length),
                             style: {
-                                position: 'absolute',
+                                position: "absolute",
                                 top: `${mmToPx(213.5)}px`,
                                 left: `${mmToPx(117)}px`,
-                                fontSize: '38px',
-                                fontWeight: '700',
-                                color: 'white',
-                                letterSpacing: '1.3px',
+                                fontSize: "38px",
+                                fontWeight: "700",
+                                color: "white",
+                                letterSpacing: "1.3px",
                             },
                         },
                     },
                     {
-                        type: 'div',
+                        type: "div",
                         props: {
                             children: summaryLine1,
                             style: {
-                                position: 'absolute',
+                                position: "absolute",
                                 top: `${mmToPx(247.5)}px`,
                                 left: `${mmToPx(9.5)}px`,
                                 width: `${mmToPx(134)}px`,
-                                fontSize: '20px',
-                                fontWeight: '300',
-                                color: 'white',
+                                fontSize: "20px",
+                                fontWeight: "300",
+                                color: "white",
                                 letterSpacing: `${mmToPx(0.9)}px`,
-                                lineHeight: 1.5
-                            }
-                        }
+                                lineHeight: 1.5,
+                            },
+                        },
                     },
                     {
-                        type: 'div',
+                        type: "div",
                         props: {
                             children: summaryLine2,
                             style: {
-                                position: 'absolute',
+                                position: "absolute",
                                 top: `${mmToPx(263.8)}px`,
                                 left: `${mmToPx(9.5)}px`,
                                 width: `${mmToPx(195)}px`,
-                                fontSize: '20px',
-                                fontWeight: '300',
-                                color: 'white',
+                                fontSize: "20px",
+                                fontWeight: "300",
+                                color: "white",
                                 letterSpacing: `${mmToPx(0.9)}px`,
-                                lineHeight: 1.5
-                            }
-                        }
+                                lineHeight: 1.5,
+                            },
+                        },
                     },
                     {
-                        type: 'div',
+                        type: "div",
                         props: {
                             children: shareUrl,
                             style: {
-                                position: 'absolute',
+                                position: "absolute",
                                 top: `${mmToPx(44)}px`,
                                 left: `${mmToPx(4)}px`,
-                                fontSize: '17.5px',
-                                fontWeight: '300',
-                                color: '#4e5580',
+                                fontSize: "17.5px",
+                                fontWeight: "300",
+                                color: "#4e5580",
                                 letterSpacing: `${mmToPx(0.9)}px`,
-                                transform: 'rotate(90deg)',
-                                transformOrigin: "left"
-                            }
-                        }
+                                transform: "rotate(90deg)",
+                                transformOrigin: "left",
+                            },
+                        },
                     },
                 ],
             },
@@ -306,18 +331,18 @@ export const GET: APIRoute = async ({ request, locals }) => {
             height: a4_height_px,
             fonts: [
                 {
-                    name: 'Noto Sans TC',
+                    name: "Noto Sans TC",
                     data: fontBoldData,
-                    style: 'normal',
+                    style: "normal",
                     weight: 700,
                 },
                 {
-                    name: 'Noto Sans TC',
+                    name: "Noto Sans TC",
                     data: fontRegularData,
-                    style: 'normal',
+                    style: "normal",
                     weight: 300,
                 },
-            ]
+            ],
         });
 
         const scale = outputWidth / a4_width_px;
@@ -325,13 +350,12 @@ export const GET: APIRoute = async ({ request, locals }) => {
 
         return new Response(svg, {
             headers: {
-                'Content-Type': 'image/svg+xml',
-                'Cache-Control': 'public, max-age=31536000, immutable',
+                "Content-Type": "image/svg+xml",
+                "Cache-Control": "public, max-age=31536000, immutable",
             },
         });
-
     } catch (e: any) {
         console.error("Error generating share card:", e);
-        return new Response(e.message || 'An internal server error occurred', { status: 500 });
+        return new Response(e.message || "An internal server error occurred", { status: 500 });
     }
 };

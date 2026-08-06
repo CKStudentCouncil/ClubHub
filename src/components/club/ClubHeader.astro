@@ -16,14 +16,8 @@ const { club, stampId } = Astro.props;
   <!-- Cover Image -->
 
   <div class="md:px-[10%] overflow-hidden">
-    <div
-      class="w-full h-auto rounded-md max-h-[70vh] md:border border-accent-600 overflow-hidden"
-    >
-      <Image
-        src={club.bgImage}
-        alt={`${club.name} 的封面圖片`}
-        class="w-full h-full max-h-[70vh] object-cover"
-      />
+    <div class="w-full h-auto rounded-md max-h-[70vh] md:border border-accent-600 overflow-hidden">
+      <Image src={club.bgImage} alt={`${club.name} 的封面圖片`} class="w-full h-full max-h-[70vh] object-cover" />
     </div>
   </div>
 
@@ -35,20 +29,14 @@ const { club, stampId } = Astro.props;
       <div
         class="w-28 h-28 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden flex-shrink-0 border-3 border-primary-100"
       >
-        <Image
-          src={club.profileImage}
-          alt={`${club.name} 的頭貼`}
-          class="w-full h-full object-cover rounded-full"
-        />
+        <Image src={club.profileImage} alt={`${club.name} 的頭貼`} class="w-full h-full object-cover rounded-full" />
       </div>
 
       <div class="flex-grow text-center sm:text-left sm:pb-2 /bg-red-400">
         <h1 class="text-3xl md:text-4xl font-bold text-primary-950">
           {club.name}
         </h1>
-        <div
-          class="flex justify-center sm:justify-start items-center gap-3 mt-2"
-        >
+        <div class="flex justify-center sm:justify-start items-center gap-3 mt-2">
           {
             club.attendsExpo && (
               <span class="flex items-center gap-1.5 text-sm bg-indigo-200 text-blue-800 px-2 py-0.5 rounded-full">
@@ -61,7 +49,7 @@ const { club, stampId } = Astro.props;
             club.hasClubStamp && (
               <span class="flex items-center gap-1.5 text-sm bg-orange-200 text-yellow-800 px-2 py-0.5 rounded-full">
                 <Stamp className="w-4 h-4" />
-                保管印章 {stampId&&["","Ⅰ","Ⅱ","Ⅲ","Ⅳ","Ⅴ"][stampId]}
+                保管印章 {stampId && ["", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ"][stampId]}
               </span>
             )
           }

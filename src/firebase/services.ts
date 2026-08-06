@@ -1,15 +1,6 @@
-import {
-    auth,
-    db
-} from './client';
+import { auth, db } from "./client";
 
-import {
-    signInWithPopup,
-    GoogleAuthProvider,
-    signOut,
-    onAuthStateChanged,
-    type User
-} from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, type User } from "firebase/auth";
 
 import {
     orderBy,
@@ -28,7 +19,7 @@ import {
     getCountFromServer,
     runTransaction,
     type DocumentData,
-    type QueryDocumentSnapshot
+    type QueryDocumentSnapshot,
 } from "firebase/firestore";
 
 export type { User };
@@ -50,7 +41,6 @@ export interface BroadcastInput {
     content: string;
     link?: string;
 }
-
 
 // =================================================================
 // ---            現有的通用服務 (保持不變)                   ---
@@ -115,7 +105,7 @@ export const readDocument = async (collectionName: string, docId: string) => {
  */
 export const readCollection = async (collectionName: string) => {
     const querySnapshot = await getDocs(collection(db, collectionName));
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 };
 
 /**
@@ -149,11 +139,7 @@ export const readCollectionWithPagination = async (
     itemsPerPage: number,
     lastVisibleDoc: QueryDocumentSnapshot<DocumentData> | null = null
 ) => {
-    let q = query(
-        collection(db, collectionName),
-        orderBy("timestamp", "desc"),
-        limit(itemsPerPage)
-    );
+    let q = query(collection(db, collectionName), orderBy("timestamp", "desc"), limit(itemsPerPage));
 
     if (lastVisibleDoc) {
         q = query(q, startAfter(lastVisibleDoc));
@@ -161,14 +147,14 @@ export const readCollectionWithPagination = async (
 
     const querySnapshot = await getDocs(q);
 
-    const data = querySnapshot.docs.map(doc => ({
+    const data = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
     }));
 
     return {
         data,
-        lastVisibleDoc: querySnapshot.docs[querySnapshot.docs.length - 1]
+        lastVisibleDoc: querySnapshot.docs[querySnapshot.docs.length - 1],
     };
 };
 
@@ -182,10 +168,9 @@ export const getTotalDocumentCount = async (collectionName: string): Promise<num
     return snapshot.data().count;
 };
 
-
-const BROADCASTS_COLLECTION = 'site_data'; // 集合名稱
-const BROADCASTS_DOC_ID = 'broadcasts';  // 固定的文件 ID
-const ADMIN_COLLECTION = 'announcementAdmins';
+const BROADCASTS_COLLECTION = "site_data"; // 集合名稱
+const BROADCASTS_DOC_ID = "broadcasts"; // 固定的文件 ID
+const ADMIN_COLLECTION = "announcementAdmins";
 const MAX_BROADCASTS = 30; // 最大訊息數量限制
 
 /**
@@ -205,7 +190,6 @@ export const checkAnnouncementAdminStatus = async (): Promise<boolean> => {
 };
 
 // ==========================
-
 
 /**
  * 讀取所有廣播訊息。
@@ -286,7 +270,7 @@ export const deleteBroadcast = async (id: string): Promise<void> => {
             const existingMessages: NewsData[] = broadcastDoc.data().messages || [];
 
             // 過濾掉要刪除的訊息
-            const updatedMessages = existingMessages.filter(msg => msg.id !== id);
+            const updatedMessages = existingMessages.filter((msg) => msg.id !== id);
 
             // 更新文件中的陣列
             transaction.update(broadcastDocRef, { messages: updatedMessages });
@@ -300,8 +284,8 @@ export const deleteBroadcast = async (id: string): Promise<void> => {
 // ==========================
 
 export const getSurveyTotalCount = async (): Promise<number> => {
-    const surveyStats = await readDocument('stats', 'survey');
-    if (surveyStats && typeof surveyStats.count === 'number') {
+    const surveyStats = await readDocument("stats", "survey");
+    if (surveyStats && typeof surveyStats.count === "number") {
         return surveyStats.count;
     }
     return 0;

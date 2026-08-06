@@ -1,4 +1,4 @@
-import type { GetImageResult } from 'astro';
+import type { GetImageResult } from "astro";
 export interface ClubInfoForMap {
     mapId: string;
     clubCode: string;
@@ -25,7 +25,7 @@ export type Club = {
         previousYear: string;
     };
 
-    membershipFee?: string; 
+    membershipFee?: string;
 
     activities: string[];
     workshops: {

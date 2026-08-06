@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
-import type { User } from 'firebase/auth';
+import { useState, useEffect, useCallback } from "react";
+import type { User } from "firebase/auth";
 
-import { onAuthStateChange, triggerSignIn, triggerSignOut } from '../firebase/services';
+import { onAuthStateChange, triggerSignIn, triggerSignOut } from "../firebase/services";
 
 interface MinimalAuth {
     isLoggedIn: boolean;

@@ -17,10 +17,7 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
-const post: CollectionEntry<"clubs"> | undefined = await getEntry(
-  "clubs",
-  slug
-);
+const post: CollectionEntry<"clubs"> | undefined = await getEntry("clubs", slug);
 
 if (post === undefined) {
   return Astro.redirect("/404");
@@ -28,9 +25,7 @@ if (post === undefined) {
 
 const { Content } = await post.render();
 const { data } = post;
-const stampId = clubMappings[data.clubCode]
-  ? clubMappings[data.clubCode].stampId || null
-  : null;
+const stampId = clubMappings[data.clubCode] ? clubMappings[data.clubCode].stampId || null : null;
 
 const cleanSummary = data.summary.replace(/\s+/g, " ").trim();
 
@@ -56,12 +51,7 @@ const schema = {
   <ClubHeader club={data} stampId={stampId} />
 
   <article class="max-w-4xl mx-auto pb-8 py-4 px-6 sm:px-8 lg:px-16">
-    <StickyActions
-      client:load
-      clubCode={data.clubCode}
-      clubName={data.name}
-      attendsExpo={data.attendsExpo}
-    />
+    <StickyActions client:load clubCode={data.clubCode} clubName={data.name} attendsExpo={data.attendsExpo} />
     <div class="lg:px-8 xl:px-16">
       <ClubInfoPanel club={data} />
     </div>

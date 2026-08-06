@@ -1,17 +1,24 @@
-import { Star, Bookmark } from 'lucide-react';
-import type { Club } from '@/types/club';
-import { motion } from 'framer-motion';
+import { Star, Bookmark } from "lucide-react";
+import type { Club } from "@/types/club";
+import { motion } from "framer-motion";
 type ClubData = Club;
 
-function ClubCard({ club, isFavorite, onToggleFavorite, onClick }: {
+function ClubCard({
+    club,
+    isFavorite,
+    onToggleFavorite,
+    onClick,
+}: {
     club: ClubData;
     isFavorite: boolean;
     onToggleFavorite: (id: string) => void;
     onClick: (club: ClubData) => void;
 }) {
     return (
-        <div className=" club-card-wrapper relative group cursor-pointer hover:scale-[1.02] transition-transform duration-300 rounded-xl overflow-hidden " onClick={() => onClick(club)
-        }>
+        <div
+            className=" club-card-wrapper relative group cursor-pointer hover:scale-[1.02] transition-transform duration-300 rounded-xl overflow-hidden "
+            onClick={() => onClick(club)}
+        >
             <img
                 src={club.cardImage.src}
                 alt={`${club.name} 封面`}
@@ -23,23 +30,23 @@ function ClubCard({ club, isFavorite, onToggleFavorite, onClick }: {
                 className="absolute  -left-2 -right-2 -bottom-4 h-28  rotate-[4deg]"
                 style={{
                     background: `linear-gradient(to top,rgba(28, 35, 57,0.5) 0%, rgba(28, 35, 57,0) 50%)`,
-                    transition: 'all 0.3s ease-in-out'
+                    transition: "all 0.3s ease-in-out",
                 }}
             ></div>
             <div
                 className="absolute  -left-2 right-10 -bottom-2 h-[6.4rem] "
                 style={{
                     background: `linear-gradient(to top right,rgba(28, 35, 57,0.85) 0%, rgba(28, 35, 57,0) 50%)`,
-                    clipPath: 'polygon(0 0, 100% 100%, 0 100%)',
-                    transition: 'all 0.3s ease-in-out'
+                    clipPath: "polygon(0 0, 100% 100%, 0 100%)",
+                    transition: "all 0.3s ease-in-out",
                 }}
             ></div>
             <div
                 className="absolute -right-1 -top-1 w-16 h-16 "
                 style={{
                     background: `linear-gradient(to bottom left ,rgba(28, 35, 57,0.2) 0%, rgba(28, 35, 57,0) 50%)`,
-                    clipPath: 'polygon(0 0 , 100% 0, 100% 100%)',
-                    transition: 'all 0.3s ease-in-out'
+                    clipPath: "polygon(0 0 , 100% 0, 100% 100%)",
+                    transition: "all 0.3s ease-in-out",
                 }}
             ></div>
             <div className="absolute bottom-0 left-0 p-3 px-3.5 text-white">
@@ -52,7 +59,7 @@ function ClubCard({ club, isFavorite, onToggleFavorite, onClick }: {
                     onToggleFavorite(club.clubCode);
                 }}
                 className={`absolute top-2 right-2 p-1 rounded-full bg-transparent transition-colors duration-200 hover:bg-white/10 ${isFavorite ? "text-accent-500" : "text-white"}`}
-                aria-label={isFavorite ? '取消收藏' : '加入收藏'}
+                aria-label={isFavorite ? "取消收藏" : "加入收藏"}
             >
                 <motion.div
                     animate={{
@@ -60,11 +67,11 @@ function ClubCard({ club, isFavorite, onToggleFavorite, onClick }: {
                     }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
-                    <Bookmark size={22} fill={isFavorite ? 'currentColor' : 'none'} />
+                    <Bookmark size={22} fill={isFavorite ? "currentColor" : "none"} />
                 </motion.div>
             </button>
-        </div >
-    )
+        </div>
+    );
 }
 
 export default ClubCard;

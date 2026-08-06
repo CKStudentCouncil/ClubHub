@@ -51,8 +51,7 @@ interface Props {
     <script is:inline>
       const isThemeDark =
         localStorage.getItem("theme") === "dark" ||
-        (!("theme" in localStorage) &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches);
+        (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
       if (isThemeDark) {
         document.documentElement.classList.add("dark");
@@ -69,9 +68,7 @@ interface Props {
     </script>
   </head>
 
-  <body
-    class="bg-primary-100 text-primary-950 selection:bg-accent-300/90 selection:text-primary-900"
-  >
+  <body class="bg-primary-100 text-primary-950 selection:bg-accent-300/90 selection:text-primary-900">
     <div class="w-full">
       <Navbar />
       <main
@@ -89,7 +86,7 @@ interface Props {
         duration: 1.2,
         smooth: true,
       });
-      window.lenis = lenis; 
+      window.lenis = lenis;
 
       function raf(time) {
         lenis.raf(time);
@@ -99,7 +96,6 @@ interface Props {
       requestAnimationFrame(raf);
     </script>
     <SurveyWidget client:idle />
-    
   </body>
 </html>
 <style>
