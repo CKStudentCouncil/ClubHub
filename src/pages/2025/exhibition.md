@@ -1,18 +1,16 @@
 ---
 title: 社團聯展介紹
-layout: ../layouts/MarkdownLayout.astro
-date: "2025-08-21"
+layout: ../../layouts/MarkdownLayout.astro
+date: "2025-08-22"
 ---
 
-![Ensemble 主視覺](../content/events/images/Ensemble.jpg)
+![Lunar主視覺](@/content/events/images/2.jpg)
 
 ### [社團聯展官方哀居帳號 @ck_club_exhibition\_\_](https://www.instagram.com/ck_club_exhibition__/)
 
-# 今年社聯的主題：Ensemble
+# 今年社聯的主題：Lunar
 
-<!-- #TODO: 完成這個 -->
-
-<!-- 今年社聯以「Lunar」為名，象徵表演在夜幕低垂、月光灑落的背景中展開。月亮的多變象徵著社團的多元風貌，各具風采卻在同一片夜空中交織出青春的光芒。在這樣的命名下，舞台不僅是才華的展現場域，更是一場在月色映照下共築的夢想旅程，融合浪漫、神秘與團結的意象，賦予整場活動詩意而深遠的意義。 -->
+今年社聯以「Lunar」為名，象徵表演在夜幕低垂、月光灑落的背景中展開。月亮的多變象徵著社團的多元風貌，各具風采卻在同一片夜空中交織出青春的光芒。在這樣的命名下，舞台不僅是才華的展現場域，更是一場在月色映照下共築的夢想旅程，融合浪漫、神秘與團結的意象，賦予整場活動詩意而深遠的意義。
 
 # 什麼是社聯？
 
@@ -30,29 +28,25 @@ date: "2025-08-21"
 
 社團聯展開放給所有友校同學以及社會大眾參觀，今年的社聯是在 08/22 舉辦，以下是這次的相關資訊！
 
-- **時間：** 2025/08/21 14:45 進場，15:00 開始
-- **地點：** 建國中學，活動中心三樓禮堂
+- **時間：** 2025/08/22 16:20 進場，16:50 開始
+- **地點：** 建國中學，夢紅樓展演廳二樓
 - **主/承辦單位：** 建中社團活動組&建中班聯會
 - **哀居帳號連結：** [ck_club_exhibition\_\_](https://www.instagram.com/ck_club_exhibition__/)
 
 # 歷屆的社聯回顧！
 
-#### [2025 社聯「Lunar」介紹](/2025/exhibition)
-
 <div class="grid grid-cols-2 gap-4 lg:gap-10">
-
-
 <div>
 
-![muse 表演](../images/exhibition/DSC_5207.jpg)
-![muse 海報](../images/exhibition/IMG_8784.JPG)
+![muse 表演](@/images/exhibition/DSC_5207.jpg)
+![muse 海報](@/images/exhibition/IMG_8784.JPG)
 
 </div>
 
 <div>
 
-![zodiac](../images/exhibition/isds.png)
-![muse 表演](../images/exhibition/DSC_5480.jpg)
+![zodiac](@/images/exhibition/isds.png)
+![muse 表演](@/images/exhibition/DSC_5480.jpg)
 
 </div>
 
