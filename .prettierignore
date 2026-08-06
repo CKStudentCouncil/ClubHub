@@ -1,0 +1,14 @@
+dist/
+.astro/
+node_modules/
+.vercel/
+.wrangler/
+public/pagefind/
+
+bun.lock
+pnpm-lock.yaml
+package-lock.json
+
+# 社團 / 頁面內容 markdown：prettier 的 YAML formatter 會重排 frontmatter 的
+# sequence 縮排（語意不變，但會製造大量與內容編輯衝突的 diff），故不納管。
+*.md
