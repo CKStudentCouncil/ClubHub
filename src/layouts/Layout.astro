@@ -18,6 +18,8 @@ const {
   customOgTitle = null,
   customOgImage = null,
   padding = true,
+  noindex = false,
+  canonical = null,
 } = Astro.props;
 
 // Interface to type-check the properties
@@ -30,6 +32,8 @@ interface Props {
   customOgTitle?: string | null;
   customOgImage?: ImageMetadata | null;
   padding?: boolean;
+  noindex?: boolean;
+  canonical?: string | null;
 }
 ---
 
@@ -42,6 +46,8 @@ interface Props {
       customOgTitle={customOgTitle || title}
       customOgDescription={customOgDescription || description}
       customOgImage={customOgImage}
+      noindex={noindex}
+      canonical={canonical}
     />
 
     <title data-pagefind-meta="title">{title}</title>

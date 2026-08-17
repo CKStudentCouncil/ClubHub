@@ -3,6 +3,8 @@ import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import { getImage } from "astro:assets";
 import SearchPage from "@/components/SearchPage";
+import YearSwitcher from "@/components/ui/YearSwitcher.astro";
+import { CURRENT_CLUB_YEAR } from "@data/clubYears";
 
 const clubs = await getCollection("clubs");
 const allClubs = await Promise.all(
@@ -23,18 +25,23 @@ const allClubs = await Promise.all(
     }),
   }))
 );
+
+const hrefs = { [CURRENT_CLUB_YEAR.year]: "/clubs", 2025: "/2025/clubs" };
 ---
 
 <Layout
   title="社團資料庫 | CKClubHub"
-  description="在 CKClubHub 上的社團資料庫探索超過 50 個社團！"
-  customOgTitle="在 CKClubHub 上的社團資料庫探索超過 50 個社團！"
+  description={`在 CKClubHub 上的社團資料庫探索 ${allClubs.length} 個社團！`}
+  customOgTitle={`在 CKClubHub 上的社團資料庫探索 ${allClubs.length} 個社團！`}
 >
   <div class="max-w-6xl mx-auto px-4">
-    <div class="text-center mb-16">
+    <div class="text-center mb-8">
       <h1 class="text-4xl sm:text-5xl font-bold text-primary-800 mb-4">社團資料庫</h1>
-      <p class="text-lg text-neutral-600">探索建中超過 50 個精彩社團</p>
+      <p class="text-lg text-neutral-600">探索建中 {allClubs.length} 個精彩社團</p>
+    </div>
+    <div class="mb-10 flex justify-center">
+      <YearSwitcher current={CURRENT_CLUB_YEAR.year} hrefs={hrefs} />
     </div>
   </div>
-  <SearchPage allClubs={allClubs} client:load />
+  <SearchPage allClubs={allClubs} year={CURRENT_CLUB_YEAR.year} client:load />
 </Layout>

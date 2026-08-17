@@ -40,6 +40,7 @@ export default function FuzzySearch<T>({
                         return value + " " + (value as string).slice(5, (value as string).length).replace("-", "");
                     }
                     if (typeof value === "string") return value;
+                    if (typeof value === "number") return String(value);
                     if (Array.isArray(value)) return value.join(" ");
                     return "";
                 })

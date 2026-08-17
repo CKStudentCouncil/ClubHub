@@ -1,0 +1,138 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+
+import ClubHeader from "@/components/club/ClubHeader.astro";
+import StickyActions from "@/components/club/StickyActions.tsx";
+import ClubInfoPanel from "@/components/club/ClubInfoPanel.astro";
+import ArchiveNotice from "@/components/club/ArchiveNotice.astro";
+import YearSwitcher from "@/components/ui/YearSwitcher.astro";
+import { CURRENT_CLUB_YEAR, getClubYear } from "@data/clubYears";
+
+type ClubEntry = CollectionEntry<"clubs"> | CollectionEntry<"clubs2025">;
+
+interface Props {
+  post: ClubEntry;
+  /** 這個頁面掛在哪個年度底下 */
+  year: number;
+  stampId: number | null;
+  /** 其他年度同一社團的網址，用於年度切換器 */
+  hrefs: Record<number, string | undefined>;
+}
+
+const { post, year, stampId, hrefs } = Astro.props;
+const { Content } = await post.render();
+const data = post.data;
+
+const isArchive = year !== CURRENT_CLUB_YEAR.year;
+// 掛在當年度、但內容其實來自往年的社團（今年沒有回覆表單）
+const isStale = !isArchive && data.dataYear !== CURRENT_CLUB_YEAR.year;
+const staleYear = getClubYear(data.dataYear);
+// 收藏／按讚等個人化功能只在當年度頁面提供，避免兩個年度互相干擾
+const showActions = !isArchive;
+---
+
+<ClubHeader club={data} stampId={stampId} />
+
+<article class="max-w-4xl mx-auto pb-8 py-4 px-6 sm:px-8 lg:px-16">
+  {
+    showActions && (
+      <StickyActions client:load clubCode={data.clubCode} clubName={data.name} attendsExpo={data.attendsExpo} />
+    )
+  }
+  <div class="lg:px-8 xl:px-16">
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <YearSwitcher current={year} hrefs={hrefs} />
+    </div>
+
+    {
+      isArchive && (
+        <ArchiveNotice
+          variant="archive"
+          academicYear={getClubYear(year).academicYear}
+          href={hrefs[CURRENT_CLUB_YEAR.year]}
+          class="mb-6"
+        />
+      )
+    }
+    {
+      isStale && (
+        <ArchiveNotice
+          variant="stale"
+          academicYear={staleYear.academicYear}
+          href={hrefs[staleYear.year]}
+          class="mb-6"
+        />
+      )
+    }
+
+    <ClubInfoPanel club={data} />
+  </div>
+
+  <main
+    data-pagefind-body={isArchive ? undefined : true}
+    class="mt-6 prose prose-base dark:prose-invert prose-img:rounded-sm mb-20 max-w-none py-8 px-4 sm:px-4 md:px-6 lg:px-[5%]"
+  >
+    <Content />
+  </main>
+  {
+    data.alternateNames && data.alternateNames.length > 0 && (
+      <div class="mt-4 text-xs text-gray-600 dark:text-gray-400">
+        <span class="font-semibold">其他名稱（自動產生）：</span>
+        {data.alternateNames.join("、")}
+      </div>
+    )
+  }
+</article>
+
+{
+  /* 這個區塊專門用來餵給 Pagefind 搜尋引擎，使用者看不到但對搜尋很重要。
+     封存年度不建索引，否則搜尋結果會出現同一社團的兩筆資料。 */
+}
+{
+  !isArchive && (
+    <>
+      <div style="display: none;" data-pagefind-body>
+        <p data-pagefind-weight="10">{data.name}</p>
+
+        {data.alternateNames && data.alternateNames.length > 0 && (
+          <p data-pagefind-weight="9">{data.alternateNames.join(" ")}</p>
+        )}
+
+        <p data-pagefind-weight="8">{data.clubCode}</p>
+
+        <p data-pagefind-weight="6">{data.tags.join(" ")}</p>
+
+        <p data-pagefind-weight="5">{data.summary}</p>
+
+        <p data-pagefind-weight="3">
+          {data.activities.join(" ")}
+          {data.workshops.description}
+        </p>
+
+        <p data-pagefind-weight="2">{data.officers.map((officer) => officer.name).join(" ")}</p>
+
+        {data.tags.map((tag) => (
+          <span data-pagefind-filter="tag">{tag}</span>
+        ))}
+
+        <p data-pagefind-filter={`members`}>{data.members.previousYear}</p>
+
+        {data.attendsExpo && <p data-pagefind-filter={`other`}>社團博覽會攤位</p>}
+        {data.hasClubStamp && <p data-pagefind-filter={`other`}>社團博覽會印章</p>}
+        {data.acceptsUnofficial && <p data-pagefind-filter={`other`}>可地社</p>}
+      </div>
+
+      <div data-pagefind-ignore class="hidden">
+        <p data-pagefind-meta="clubCode">{data.clubCode}</p>
+        {data.profileImage && (
+          <Image
+            data-pagefind-meta="image[src], image_alt[alt]"
+            src={data.profileImage}
+            alt={`Cover image for ${data.name}`}
+          />
+        )}
+      </div>
+    </>
+  )
+}

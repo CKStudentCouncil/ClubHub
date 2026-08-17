@@ -1,0 +1,47 @@
+---
+import { getCollection, getEntry, type CollectionEntry } from "astro:content";
+import Layout from "../../../layouts/Layout.astro";
+
+import ClubDetail from "@/components/views/ClubDetail.astro";
+import { clubMappings2025 } from "@data/clubFair";
+import { clubUrl, CURRENT_CLUB_YEAR } from "@data/clubYears";
+
+export async function getStaticPaths() {
+  const clubs = await getCollection("clubs2025");
+  return clubs.map((post) => ({
+    params: { slug: post.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const post: CollectionEntry<"clubs2025"> | undefined = await getEntry("clubs2025", slug);
+
+if (post === undefined) {
+  return Astro.redirect("/404");
+}
+
+const { data } = post;
+const stampId = clubMappings2025[data.clubCode] ? clubMappings2025[data.clubCode].stampId || null : null;
+
+const current = await getCollection("clubs", ({ data: d }) => d.clubCode === data.clubCode);
+const currentHref = current[0] ? clubUrl(CURRENT_CLUB_YEAR.year, current[0].slug) : undefined;
+const hrefs = {
+  [CURRENT_CLUB_YEAR.year]: currentHref,
+  2025: clubUrl(2025, post.slug),
+};
+
+const cleanSummary = data.summary.replace(/\s+/g, " ").trim();
+---
+
+<Layout
+  title={`${data.name}（114 學年度）| CKClubHub 建中社團資料庫`}
+  description={`建中${data.name} 在 114 學年度的社團資料封存。${data.summary}`}
+  customOgTitle={`建中${data.name} 114 學年度社團資料`}
+  customOgImage={data.profileImage}
+  customOgDescription={cleanSummary.slice(0, 30) + "..."}
+  padding={false}
+  noindex
+  canonical={currentHref}
+>
+  <ClubDetail post={post} year={2025} stampId={stampId} hrefs={hrefs} />
+</Layout>

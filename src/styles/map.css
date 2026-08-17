@@ -10,6 +10,11 @@
     stroke-width: 0.35 !important;
 }
 
+/* 該年度沒有使用到的攤位格位（各年度攤位數量不同，共用同一份 SVG） */
+#interactive-map-svg path[id^="club-"].unused-slot {
+    display: none;
+}
+
 #interactive-map-svg path[id^="club-"]:not(.selected):hover {
     /* fill: #ff8036 !important; */
     fill: transparent !important;

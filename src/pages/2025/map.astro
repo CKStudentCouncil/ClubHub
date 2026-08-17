@@ -1,0 +1,47 @@
+---
+import { getCollection } from "astro:content";
+
+import Layout from "../../layouts/Layout.astro";
+import InteractiveMap from "@components/InteractiveMap.tsx";
+import YearSwitcher from "@components/ui/YearSwitcher.astro";
+import ArchiveNotice from "@components/club/ArchiveNotice.astro";
+import { clubMappings2025 } from "@data/clubFair";
+import { buildClubsForMap, type MapOverride } from "@data/clubMapData";
+import { CURRENT_CLUB_YEAR } from "@data/clubYears";
+
+const allClubsData = await getCollection("clubs2025");
+
+const OtMapingInfoList: Record<string, MapOverride> = {
+  _SC0: {
+    summary: "班聯會為建中學生自治組織，擁有完整的行政及立法部門...",
+    slug: "/cksc",
+  },
+  _CK3: { summary: "樂旗隊在此場地表演" },
+  _A06: { summary: "航空社在此場地進行火箭實際發射" },
+  _SC1: { summary: "社團博覽會集章活動紀念品兌換處" },
+  _SC2: {
+    summary: "社團聯合展演表演場地，位於夢紅樓展演廳",
+    slug: "/2025/exhibition",
+  },
+};
+
+const clubsForMap = buildClubsForMap(allClubsData, clubMappings2025, OtMapingInfoList, "/2025");
+const hrefs = { [CURRENT_CLUB_YEAR.year]: "/map", 2025: "/2025/map" };
+---
+
+<Layout
+  title="114 學年度社團博覽會地圖｜封存 | CKClubHub"
+  description="CKClubHub 保留的 114 學年度建中社團博覽會攤位地圖。"
+  noindex
+  canonical="/map"
+>
+  <div class="text-center max-w-6xl mx-auto px-4 mt-12 sm:mt-12 md:mt-0">
+    <h1 class="text-4xl sm:text-5xl font-bold text-primary-800 mb-4">社團博覽會地圖</h1>
+    <p class="text-lg text-neutral-600">114 學年度攤位配置封存</p>
+    <div class="mt-4 flex justify-center">
+      <YearSwitcher current={2025} hrefs={hrefs} />
+    </div>
+    <ArchiveNotice variant="archive" academicYear={114} href="/map" class="mt-6 text-left" />
+  </div>
+  <InteractiveMap client:load clubs={clubsForMap} />
+</Layout>
