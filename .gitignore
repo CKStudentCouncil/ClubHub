@@ -1,4 +1,5 @@
 .claude
+pnpm-lock.yaml
 
 # build output
 dist/
