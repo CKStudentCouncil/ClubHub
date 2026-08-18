@@ -11,6 +11,10 @@ interface Props {
   customOgTitle?: string | null;
   customOgDescription?: string | null;
   customOgImage?: ImageMetadata | null;
+  /** 封存頁面設為 true，避免與當年度頁面在搜尋結果互相稀釋 */
+  noindex?: boolean;
+  /** 指向當年度對應頁面，讓搜尋引擎把權重集中在最新資料 */
+  canonical?: string | null;
 }
 
 const {
@@ -19,6 +23,8 @@ const {
   customOgTitle = null,
   customOgDescription = null,
   customOgImage = null,
+  noindex = false,
+  canonical = null,
 } = Astro.props;
 
 // 傳入的 description，頁面專屬
@@ -87,7 +93,8 @@ const maskableIcon = await getImage({
 <meta name="web_author" content={author} />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0" />
 <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-<link rel="canonical" href={pageURL.href} />
+<link rel="canonical" href={canonical ? new URL(canonical, siteURL).href : pageURL.href} />
+{noindex && <meta name="robots" content="noindex, follow" />}
 <Fragment set:html={alternateLanguageLinks} />
 
 {/* Facebook Meta Tags */}

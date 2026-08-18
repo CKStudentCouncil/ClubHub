@@ -11,7 +11,7 @@ interface ClubInfoCardProps {
 
 function ClubInfoCard({ clubInfo, onZoomToClub, onTagClick, className = "" }: ClubInfoCardProps) {
     const [tagsExpanded, setTagsExpanded] = useState(false);
-    const { mapId, name, summary, slug, tags, clubCode } = clubInfo;
+    const { mapId, name, summary, slug, tags, clubCode, booth } = clubInfo;
 
     return (
         <div className={`p-0 flex flex-col gap-2 ${className}`}>
@@ -22,7 +22,9 @@ function ClubInfoCard({ clubInfo, onZoomToClub, onTagClick, className = "" }: Cl
             >
                 <h4 className="font-bold text-xl text-black hover:text-gray-700 transition-colors">
                     {name}
-                    <span className=" text-sm text-gray-700 ml-2">{mapId.slice(5, mapId.length)}</span>
+                    <span className=" text-sm text-gray-700 ml-2">
+                        {booth ? `${booth} 號攤位` : mapId.slice(5, mapId.length)}
+                    </span>
                 </h4>
                 <span className="text-sm w-10 h-10 text-center pt-2.5  rounded-full bg-primary-50 text-primary-800">
                     {clubCode}

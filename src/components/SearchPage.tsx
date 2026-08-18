@@ -25,9 +25,54 @@ interface ClubWithSearchContext extends ClubData {
 
 interface SearchPageProps {
     allClubs: ClubData[];
+    /** 頁面前綴，封存年度為 "/2025" 之類 */
+    basePath?: string;
+    /**
+     * Pagefind 只會為當年度頁面建索引（否則同一社團會出現兩筆結果），
+     * 封存年度改用純前端的關鍵字比對。
+     */
+    usePagefind?: boolean;
+    /** 這個頁面呈現的年度，用來標出沿用往年資料的社團 */
+    year?: number;
 }
 
-function SearchPage({ allClubs }: SearchPageProps) {
+/** 封存年度沒有 Pagefind 索引時，直接用社團資料做關鍵字比對 */
+function localSearch(clubs: ClubData[], query: string, filters: Record<string, string[]>): ClubData[] {
+    const q = query.trim().toLowerCase();
+
+    return clubs.filter((club) => {
+        if (q) {
+            const haystack = [
+                club.name,
+                club.clubCode,
+                club.summary,
+                ...club.tags,
+                ...club.activities,
+                club.workshops.description,
+                ...club.officers.map((o) => o.name),
+            ]
+                .join(" ")
+                .toLowerCase();
+            if (!haystack.includes(q)) return false;
+        }
+
+        if (filters.tag?.length && !filters.tag.every((t) => club.tags.includes(t))) return false;
+        if (filters.members?.length && !filters.members.includes(club.members.previousYear)) return false;
+
+        if (filters.other?.length) {
+            const flags = [
+                club.attendsExpo && "社團博覽會攤位",
+                club.hasClubStamp && "社團博覽會印章",
+                club.acceptsUnofficial && "可地社",
+            ].filter(Boolean) as string[];
+            if (!filters.other.every((o) => flags.includes(o))) return false;
+        }
+
+        return true;
+    });
+}
+
+function SearchPage({ allClubs, basePath = "", usePagefind = true, year = 2026 }: SearchPageProps) {
     const [searchResults, setSearchResults] = useState<ClubWithSearchContext[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
@@ -87,6 +132,7 @@ function SearchPage({ allClubs }: SearchPageProps) {
     const dragControls = useDragControls();
 
     useEffect(() => {
+        if (!usePagefind) return;
         const loadPagefind = async () => {
             if (!pagefindApi.current) {
                 try {
@@ -101,7 +147,7 @@ function SearchPage({ allClubs }: SearchPageProps) {
             }
         };
         loadPagefind();
-    }, []);
+    }, [usePagefind]);
 
     useEffect(() => {
         const hasSearchTerm = searchQuery.trim().length > 0;
@@ -135,6 +181,11 @@ function SearchPage({ allClubs }: SearchPageProps) {
                 }
 
                 setIsSearching(true);
+
+                if (!usePagefind) {
+                    setSearchResults(localSearch(allClubs, searchQuery, activeFilters));
+                    return;
+                }
 
                 if (!pagefindApi.current) return;
 
@@ -196,7 +247,7 @@ function SearchPage({ allClubs }: SearchPageProps) {
         }, 300);
 
         return () => clearTimeout(debounceTimeout);
-    }, [searchQuery, activeFilters, allClubsMap]);
+    }, [searchQuery, activeFilters, allClubsMap, usePagefind, allClubs]);
 
     useEffect(() => {
         if (!isClient) return;
@@ -226,6 +277,22 @@ function SearchPage({ allClubs }: SearchPageProps) {
 
     useEffect(() => {
         const updateFilters = async () => {
+            if (!usePagefind) {
+                // 沒有 Pagefind 索引時，篩選選項直接從社團資料推導
+                const tags = [...new Set(allClubs.flatMap((c) => c.tags))].sort();
+                const members = [...new Set(allClubs.map((c) => c.members.previousYear))].sort(
+                    (a, b) => parseInt(a) - parseInt(b)
+                );
+                const other = [
+                    allClubs.some((c) => c.attendsExpo) && "社團博覽會攤位",
+                    allClubs.some((c) => c.hasClubStamp) && "社團博覽會印章",
+                    allClubs.some((c) => c.acceptsUnofficial) && "可地社",
+                ].filter(Boolean) as string[];
+
+                setAvailableFilters({ tags, members, other });
+                return;
+            }
+
             if (!pagefindApi.current) return;
 
             try {
@@ -243,7 +310,7 @@ function SearchPage({ allClubs }: SearchPageProps) {
         };
 
         updateFilters();
-    }, [pagefindApi.current, allClubs]);
+    }, [pagefindApi.current, allClubs, usePagefind]);
 
     const handleToggleFavorite = useCallback(
         (id: string) => {
@@ -505,6 +572,11 @@ function SearchPage({ allClubs }: SearchPageProps) {
                                         isFavorite={isClient ? favorites.has(club.clubCode) : false}
                                         onToggleFavorite={handleToggleFavorite}
                                         onClick={handleSelectClub}
+                                        staleLabel={
+                                            club.dataYear && club.dataYear !== year
+                                                ? `${club.dataYear - 1911} 學年度資料`
+                                                : undefined
+                                        }
                                     />
                                 </motion.div>
                             ))}
@@ -586,7 +658,7 @@ function SearchPage({ allClubs }: SearchPageProps) {
                                         <p>{selectedClub.summary}</p>
                                     )}
                                     <a
-                                        href={`/clubs/${selectedClub.slug}`}
+                                        href={`${basePath}/clubs/${selectedClub.slug}`}
                                         className="text-accent-800 hover:underline font-semibold"
                                     >
                                         查看完整介紹

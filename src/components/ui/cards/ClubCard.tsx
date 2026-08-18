@@ -8,11 +8,14 @@ function ClubCard({
     isFavorite,
     onToggleFavorite,
     onClick,
+    staleLabel,
 }: {
     club: ClubData;
     isFavorite: boolean;
     onToggleFavorite: (id: string) => void;
     onClick: (club: ClubData) => void;
+    /** 內容沿用往年資料時顯示的提示，例如「114 學年度資料」 */
+    staleLabel?: string;
 }) {
     return (
         <div
@@ -53,6 +56,11 @@ function ClubCard({
                 <p className="text-xs font-semibold opacity-80">{club.clubCode}</p>
                 <h3 className="text-lg font-bold">{club.name}</h3>
             </div>
+            {staleLabel && (
+                <span className="absolute top-2 left-2 rounded-full bg-black/55 px-2 py-0.5 text-[0.65rem] text-white backdrop-blur-sm">
+                    {staleLabel}
+                </span>
+            )}
             <button
                 onClick={(e) => {
                     e.stopPropagation();

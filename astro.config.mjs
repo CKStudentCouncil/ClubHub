@@ -1,4 +1,8 @@
 // @ts-check
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@astrojs/react";
@@ -30,60 +34,36 @@ if (isVercel) {
     });
 }
 
+// 只有 Cloudflare Workers 要用 WASM 版本的 satori / resvg，其餘（本機 dev、Vercel）跑在 Node 上
+const cfWasmTarget = isCloudflare ? "workers" : "node";
+
+/**
+ * 讓 /clubs/a08 這種短網址導到完整的社團頁。
+ * 直接從 content 目錄的檔名產生，新增社團時不必手動維護這份清單。
+ *
+ * @param {string} dir content 目錄（相對於本檔案）
+ * @param {string} prefix 網址前綴，例如 "/clubs" 或 "/2025/clubs"
+ * @returns {Record<string, string>}
+ */
+function buildClubRedirects(dir, prefix) {
+    const contentDir = fileURLToPath(new URL(dir, import.meta.url));
+    if (!fs.existsSync(contentDir)) return {};
+
+    return Object.fromEntries(
+        fs
+            .readdirSync(contentDir)
+            .filter((file) => file.endsWith(".md"))
+            .map((file) => {
+                const slug = path.basename(file, ".md").toLowerCase();
+                const code = slug.split("-")[0];
+                return [`${prefix}/${code}`, `${prefix}/${slug}/`];
+            })
+    );
+}
+
 const clubRedirects = {
-    "/clubs/a01": "/clubs/a01-科學研習社/",
-    "/clubs/a02": "/clubs/a02-生物研究社/",
-    "/clubs/a03": "/clubs/a03-物理研究社/",
-    "/clubs/a05": "/clubs/a05-天文社/",
-    "/clubs/a06": "/clubs/a06-航空社/",
-    "/clubs/a07": "/clubs/a07-電子計算機研習社/",
-    "/clubs/a08": "/clubs/a08-資訊社/",
-    "/clubs/a09": "/clubs/a09-國學暨人文社會學術研究社/",
-    "/clubs/a10": "/clubs/a10-紅樓詩社/",
-    "/clubs/a13": "/clubs/a13-日本文化研究社/",
-    "/clubs/a14": "/clubs/a14-講演社/",
-    "/clubs/a17": "/clubs/a17-電影研習社/",
-    "/clubs/a20": "/clubs/a20-卡牌研究社/",
-    "/clubs/a21": "/clubs/a21-軍武社/",
-    "/clubs/a22": "/clubs/a22-小說創作研究社/",
-    "/clubs/a25": "/clubs/a25-英語辯論社/",
-    "/clubs/a28": "/clubs/a28-物理辯論社/",
-    "/clubs/a32": "/clubs/a32-建中機研/",
-    "/clubs/a33": "/clubs/a33-minecraft 邏輯研究社/",
-    "/clubs/a34": "/clubs/a34-建中模擬聯合國/",
-    "/clubs/a35": "/clubs/a35-世界地理探索社/",
-    "/clubs/a36": "/clubs/a36-韓國文化研究社/",
-    "/clubs/a37": "/clubs/a37-人工智慧研究社/",
-    "/clubs/b01": "/clubs/b01-熱舞社/",
-    "/clubs/b05": "/clubs/b05-橋藝社/",
-    "/clubs/b06": "/clubs/b06-象棋社/",
-    "/clubs/b07": "/clubs/b07-圍棋社/",
-    "/clubs/b08": "/clubs/b08-魔術社/",
-    "/clubs/b09": "/clubs/b09-美術社/",
-    "/clubs/b10": "/clubs/b10-攝影社/",
-    "/clubs/b11": "/clubs/b11-大眾傳播社/",
-    "/clubs/b12": "/clubs/b12-建中口技/",
-    "/clubs/b13": "/clubs/b13-美食社/",
-    "/clubs/b14": "/clubs/b14-魔術方塊社/",
-    "/clubs/b20": "/clubs/b20-漫畫插畫研究社/",
-    "/clubs/b22": "/clubs/b22-西洋棋社/",
-    "/clubs/c06": "/clubs/c06-戶外探索社/",
-    "/clubs/c07": "/clubs/c07-駝鈴康輔社/",
-    "/clubs/ck2": "/clubs/ck2-建中青年刊物社/",
-    "/clubs/ck3": "/clubs/ck3-樂旗隊/",
-    "/clubs/d01": "/clubs/d01-爵士音樂社/",
-    "/clubs/d02": "/clubs/d02-熱音社/",
-    "/clubs/d03": "/clubs/d03-流行音樂社/",
-    "/clubs/d04": "/clubs/d04-另類音樂創作社/",
-    "/clubs/d05": "/clubs/d05-民謠吉他/",
-    "/clubs/d07": "/clubs/d07-管弦樂社/",
-    "/clubs/d08": "/clubs/d08-口琴社/",
-    "/clubs/d10": "/clubs/d10-合唱團/",
-    "/clubs/d11": "/clubs/d11-嘻哈音樂研究社/",
-    "/clubs/e03": "/clubs/e03-劍道社/",
-    "/clubs/e04": "/clubs/e04-棒球社/",
-    "/clubs/e05": "/clubs/e05-游泳健身社/",
-    "/clubs/e10": "/clubs/e10-足球社/",
+    ...buildClubRedirects("./src/content/clubs", "/clubs"),
+    ...buildClubRedirects("./src/content/clubs2025", "/2025/clubs"),
 };
 
 export default defineConfig({
@@ -93,11 +73,16 @@ export default defineConfig({
     },
     vite: {
         resolve: {
-            alias: isCloudflare
-                ? {
-                      "react-dom/server": "react-dom/server.edge",
-                  }
-                : {},
+            // 用陣列形式才能以正規表達式做「完全相符」的比對，
+            // 否則 @cf-wasm/satori -> @cf-wasm/satori/node 會再次命中自己而無限遞迴
+            alias: [
+                ...(isCloudflare ? [{ find: /^react-dom\/server$/, replacement: "react-dom/server.edge" }] : []),
+                // @cf-wasm/* 的預設進入點是給 Workers 的 WASM 版本，
+                // 在 Node（本機 dev 與 Vercel）底下會因為 Node 把 .wasm 當 ES module 解析而失敗
+                // （Cannot find package 'a' imported from .../yoga.wasm），所以按執行環境指定進入點。
+                { find: /^@cf-wasm\/satori$/, replacement: `@cf-wasm/satori/${cfWasmTarget}` },
+                { find: /^@cf-wasm\/resvg$/, replacement: `@cf-wasm/resvg/${cfWasmTarget}` },
+            ],
         },
         plugins: [
             tailwindcss(),
@@ -118,7 +103,14 @@ export default defineConfig({
     markdown: {
         remarkPlugins: ["remark-breaks"],
     },
-    integrations: [react(), sitemap()],
+    integrations: [
+        react(),
+        sitemap({
+            // 封存年度的社團頁與地圖是 noindex，不必進 sitemap
+            // （/2025/exhibition 是仍有閱讀價值的回顧文章，保留）
+            filter: (page) => !/\/2025\/(clubs|map)/.test(page),
+        }),
+    ],
 
     build: {
         format: "directory",

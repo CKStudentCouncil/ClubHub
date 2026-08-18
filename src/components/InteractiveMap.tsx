@@ -150,6 +150,10 @@ function InteractiveMap({ clubs }: InteractiveMapProps) {
                     const clubId = path.id;
                     const clubData = clubsDataMap.get(clubId);
 
+                    // 各年度的攤位數量不同，SVG 裡今年沒用到的格位要藏起來，
+                    // 否則地圖上會留下沒有標籤、點了也沒反應的空圈圈
+                    path.classList.toggle("unused-slot", !clubData);
+
                     if (clubData) {
                         const bbox = path.getBBox();
                         const x = bbox.x + bbox.width / 2;
@@ -374,7 +378,7 @@ function InteractiveMap({ clubs }: InteractiveMapProps) {
                 >
                     <FuzzySearch<ClubInfoForMap>
                         items={clubs}
-                        searchKeys={["name", "summary", "tags", "clubCode", "mapId"]}
+                        searchKeys={["name", "summary", "tags", "clubCode", "mapId", "booth"]}
                         onSelect={handleSelectClubFromSearch}
                         placeholder="輸入關鍵字或攤位編號"
                         className="  md:flex-1 pointer-events-auto"
