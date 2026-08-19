@@ -28,6 +28,7 @@
 - **響應式設計** - 支援桌面和行動裝置瀏覽
 - **外部資訊整合** - 連結社團官方資源和相關連結
 - **主題切換功能** - 支援深色和淺色模式
+- **歷年資料封存** - 保留往年的社團資料與攤位地圖，可在頁面上切換年度檢視
 
 ### 專案狀態
 - 開發狀態：正式運營中
@@ -37,6 +38,25 @@
 
 ### 資料彙整
 透過 google 表單搜集彙整資料，並使用正規表達式自動產生對應 Markdown 檔案，並於構建網站時依據檔案生成頁面
+
+匯入腳本為 `scripts/import-club-forms.py`：
+
+```bash
+python3 scripts/import-club-forms.py "表單回覆.csv" "社團博覽會網頁製作資訊收集表單 (File responses)"
+```
+
+### 年度資料結構
+每個學年度是一個獨立的 content collection，當年度掛在網站根目錄，往年封存在 `/YYYY` 之下：
+
+| 學年度 | Collection | 資料庫 | 地圖 | 社團頁 |
+| --- | --- | --- | --- | --- |
+| 115（當年度） | `src/content/clubs` | `/clubs` | `/map` | `/clubs/[slug]` |
+| 114（封存） | `src/content/clubs2025` | `/2025/clubs` | `/2025/map` | `/2025/clubs/[slug]` |
+
+- 當年度網址維持不變，封存頁面加上 `noindex` 並把 canonical 指回當年度頁面，避免稀釋 SEO
+- Pagefind 只索引當年度頁面，封存年度的資料庫改用前端關鍵字比對
+- 年度定義集中在 `src/data/clubYears.ts`，攤位配置在 `src/data/clubFair.ts`
+- 社團的 `dataYear` 欄位代表該筆資料實際由哪一年的表單提供；若小於當年度，頁面會提示內容沿用往年
 
 ### 前端技術
 - **Astro** - 用於實現部分組件、圖片優化等等

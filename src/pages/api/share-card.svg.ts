@@ -101,7 +101,11 @@ export const GET: APIRoute = async ({ request, locals }) => {
                           ? "此社團尚未提供詳細資訊。"
                           : "建中班聯是建中最高學生自治組織，處理學生相關大小事。我們自己有厚達 189 頁的法規系統，有憲章、法律、命令的法位階概念；大家各司其職，依法行政，有的人負責爭取學權，也有人主責活動辦理，更有人專研司法律的裁決或審判。因為我們獨特的三權分立系統，有行政、立法、司法部門，所以運作之完善。廣義的建中班聯，範圍其實就是建中全校同學，而全校同學統一稱為班聯會「會員」，也就是說大家都是班聯會的一份子。",
               };
-        const { mapId, stampId } = clubMapInfo ? clubMapInfo : { mapId: "club-無", stampId: 0 };
+        const { mapId, stampId, booth } = clubMapInfo
+            ? clubMapInfo
+            : { mapId: "club-無", stampId: 0, booth: undefined };
+        // 平面圖上的攤位編號；沒有實體攤位時退回地圖上的格位代號
+        const boothLabel = booth ? String(booth) : mapId.slice(5, mapId.length);
         const shareUrl = clubContent
             ? `${SITE.url}clubs/${clubContent.slug}`
             : clubCode.toUpperCase() != "CK0"
@@ -256,7 +260,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
                     {
                         type: "div",
                         props: {
-                            children: mapId.slice(5, mapId.length),
+                            children: boothLabel,
                             style: {
                                 position: "absolute",
                                 top: `${mmToPx(213.5)}px`,

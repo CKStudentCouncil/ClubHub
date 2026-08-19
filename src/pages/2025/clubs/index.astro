@@ -1,0 +1,51 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../../layouts/Layout.astro";
+import { getImage } from "astro:assets";
+import SearchPage from "@/components/SearchPage";
+import YearSwitcher from "@/components/ui/YearSwitcher.astro";
+import ArchiveNotice from "@/components/club/ArchiveNotice.astro";
+import { CURRENT_CLUB_YEAR } from "@data/clubYears";
+
+const clubs = await getCollection("clubs2025");
+const allClubs = await Promise.all(
+  clubs.map(async (club) => ({
+    ...club.data,
+    slug: club.slug,
+    cardImage: await getImage({
+      src: club.data.cardImage,
+      format: "avif",
+    }),
+    bgImage: await getImage({
+      src: club.data.bgImage,
+      format: "avif",
+    }),
+    profileImage: await getImage({
+      src: club.data.profileImage,
+      format: "avif",
+    }),
+  }))
+);
+
+const hrefs = { [CURRENT_CLUB_YEAR.year]: "/clubs", 2025: "/2025/clubs" };
+---
+
+<Layout
+  title="114 學年度社團資料庫｜封存 | CKClubHub"
+  description="CKClubHub 保留的 114 學年度建中社團資料，供對照與查閱。"
+  customOgTitle="CKClubHub 114 學年度社團資料封存"
+  noindex
+  canonical="/clubs"
+>
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl sm:text-5xl font-bold text-primary-800 mb-4">社團資料庫</h1>
+      <p class="text-lg text-neutral-600">114 學年度封存資料，共 {allClubs.length} 個社團</p>
+    </div>
+    <div class="mb-6 flex justify-center">
+      <YearSwitcher current={2025} hrefs={hrefs} />
+    </div>
+    <ArchiveNotice variant="archive" academicYear={114} href="/clubs" class="mb-10" />
+  </div>
+  <SearchPage allClubs={allClubs} basePath="/2025" usePagefind={false} year={2025} client:load />
+</Layout>

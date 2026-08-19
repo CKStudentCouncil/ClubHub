@@ -1,0 +1,65 @@
+---
+import { clubYears, CURRENT_CLUB_YEAR } from "@data/clubYears";
+import { History } from "lucide-react";
+
+interface Props {
+  /** 目前顯示的年度 */
+  current: number;
+  /**
+   * 各年度對應的連結。沒有列出的年度會被標成「無資料」而不可點擊，
+   * 例如某個社團去年還不存在時。
+   */
+  hrefs: Record<number, string | undefined>;
+  class?: string;
+}
+
+const { current, hrefs, class: className = "" } = Astro.props;
+---
+
+<nav aria-label="切換學年度" class={`flex flex-wrap items-center gap-2 ${className}`}>
+  <span class="flex items-center gap-1.5 text-sm text-neutral-600">
+    <History className="w-4 h-4" />
+    學年度
+  </span>
+  <div class="flex flex-wrap gap-1.5">
+    {
+      clubYears.map((y) => {
+        const isCurrent = y.year === current;
+        const href = hrefs[y.year];
+        const base = "px-3 py-1 text-sm rounded-full border transition-colors";
+
+        if (isCurrent) {
+          return (
+            <span
+              aria-current="page"
+              class={`${base} bg-accent-600/90 dark:bg-accent-700 border-accent-300 text-neutral-50`}
+            >
+              {y.label}
+              {y.year === CURRENT_CLUB_YEAR.year && <span class="ml-1 opacity-80">·最新</span>}
+            </span>
+          );
+        }
+
+        if (!href) {
+          return (
+            <span
+              title={`${y.label}沒有這個社團的資料`}
+              class={`${base} border-primary-300 dark:border-primary-500 text-neutral-500 cursor-not-allowed opacity-60`}
+            >
+              {y.label}
+            </span>
+          );
+        }
+
+        return (
+          <a
+            href={href}
+            class={`${base} border-primary-300 dark:border-primary-500 text-neutral-700 hover:border-accent-500 hover:text-accent-700`}
+          >
+            {y.label}
+          </a>
+        );
+      })
+    }
+  </div>
+</nav>

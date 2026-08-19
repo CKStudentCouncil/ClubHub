@@ -1,0 +1,50 @@
+---
+import { AlertTriangle, Archive } from "lucide-react";
+
+interface Props {
+  /**
+   * archive：整個頁面都是往年封存資料
+   * stale：頁面屬於當年度，但這個社團沒有回覆今年的表單，內容沿用往年
+   */
+  variant: "archive" | "stale";
+  /** 資料實際來自哪個學年度 */
+  academicYear: number;
+  /** 導向另一個年度的連結 */
+  href?: string;
+  class?: string;
+}
+
+const { variant, academicYear, href, class: className = "" } = Astro.props;
+
+const isArchive = variant === "archive";
+const tone = isArchive
+  ? "border-primary-300 dark:border-primary-500 bg-primary-50 text-neutral-700"
+  : "border-amber-500/60 bg-amber-100/70 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200";
+---
+
+<div role="note" class={`flex items-start gap-2.5 rounded-lg border px-4 py-3 text-sm ${tone} ${className}`}>
+  {isArchive ? <Archive className="w-5 h-5 shrink-0 mt-0.5" /> : <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />}
+  <div>
+    {
+      isArchive ? (
+        <p>
+          你正在檢視 <strong>{academicYear} 學年度</strong> 的封存資料，內容不會再更新。
+          {href && (
+            <a href={href} class="ml-1 font-semibold text-accent-800 dark:text-accent-300 hover:underline">
+              查看最新資料
+            </a>
+          )}
+        </p>
+      ) : (
+        <p>
+          這個社團尚未提供本學年度的資料，以下內容由 <strong>{academicYear} 學年度</strong> 提供，可能已經過時。
+          {href && (
+            <a href={href} class="ml-1 font-semibold text-accent-800 dark:text-accent-300 hover:underline">
+              查看 {academicYear} 學年度頁面
+            </a>
+          )}
+        </p>
+      )
+    }
+  </div>
+</div>

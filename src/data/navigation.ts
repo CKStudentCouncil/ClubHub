@@ -13,6 +13,7 @@ const footerLinks = [
         links: [
             { name: "關於此網站", url: "/about" },
             { name: "近期活動", url: "/events" },
+            { name: "114 學年度資料", url: "/2025/clubs" },
             // { name: "聯絡我們", url: "/contact" },
             { name: "版權聲明", url: "/copyright" },
             { name: "隱私權政策", url: "/privacy" },
