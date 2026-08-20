@@ -26,7 +26,7 @@ function ClubInfoCard({ clubInfo, onZoomToClub, onTagClick, className = "" }: Cl
                         {booth ? `${booth} 號攤位` : mapId.slice(5, mapId.length)}
                     </span>
                 </h4>
-                <span className="text-sm w-10 h-10 text-center pt-2.5  rounded-full bg-primary-50 text-primary-800">
+                <span className="text-sm shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-primary-50 text-primary-800">
                     {clubCode}
                 </span>
             </div>
