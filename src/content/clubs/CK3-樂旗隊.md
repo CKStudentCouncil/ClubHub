@@ -10,7 +10,7 @@ alternateNames:
 
 clubCode: "CK3"
 attendsExpo: true
-hasClubStamp: false
+hasClubStamp: true
 acceptsUnofficial: true
 
 summary: "我們是一支美式行進樂隊，由樂隊和旗隊組成，在演奏樂器及舞動旗槍的同時，再搭配各式各樣的隊形變換及動作，帶給觀眾聽覺與視覺的雙重震撼"

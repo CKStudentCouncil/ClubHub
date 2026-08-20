@@ -8,7 +8,9 @@ import S5 from "@/assets/stamps/s5.svg?react";
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 
+// index 對應 stampId：0 為未保管印章，1~5 依序為紅樓、鴿子、展版、藍圖、跳舞
 const Ss = [
+    null,
     <S1 className=" w-full h-full" />,
     <S2 className=" w-full h-full" />,
     <S3 className=" w-full h-full" />,
@@ -78,14 +80,14 @@ function CardDesigner({ clubName, clubCode, stampId, mapId, summary, shareUrl }:
                     className="absolute text-[2.6rem] font-bold text-white"
                     style={{ top: "190mm", left: "189mm", letterSpacing: "1mm" }}
                 >
-                    {stampId && ["無", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ"][stampId]}
+                    {stampId > 0 && ["無", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ"][stampId]}
                 </div>
 
                 <div
                     className="absolute text-[2.6rem] font-bold text-white"
                     style={{ top: "210mm", left: "156mm", width: "41mm" }}
                 >
-                    {stampId && Ss[stampId]}
+                    {stampId > 0 && Ss[stampId]}
                 </div>
 
                 <div
