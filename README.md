@@ -169,7 +169,7 @@ npm run dev
 - 建中社團執行委員會
 - 建中班聯會
 
-**其他協助單位**  
+**網頁製作單位**  
 - 建中電子計算機研究社
 
 ## 更新日誌
@@ -193,8 +193,10 @@ npm run dev
 
 ## 聯絡方式
 
-**網站開發人員**  
-GitHub: https://github.com/jx06T
+**網站開發人員**   
+jx06T: https://github.com/jx06T   
+Dong-Chen-1031: https://github.com/Dong-Chen-1031  
+
 
 **建中班聯會**  
 Instagram: https://www.instagram.com/cksc.80th/
