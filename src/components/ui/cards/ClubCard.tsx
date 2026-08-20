@@ -20,12 +20,15 @@ function ClubCard({
     return (
         <div
             className=" club-card-wrapper relative group cursor-pointer hover:scale-[1.02] transition-transform duration-300 rounded-xl overflow-hidden "
+            style={{ containerType: "inline-size" }}
             onClick={() => onClick(club)}
         >
+            {/* 高度依圖片比例，但限制在欄寬的 0.75~1.25 倍之間，避免卡片高度落差過大 */}
             <img
                 src={club.cardImage.src}
                 alt={`${club.name} 封面`}
-                className="w-full h-auto shadow-md min-h-20 "
+                className="w-full h-auto shadow-md object-cover"
+                style={{ minHeight: "75cqw", maxHeight: "125cqw" }}
                 loading="lazy"
             />
             {/* <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent "></div> */}
