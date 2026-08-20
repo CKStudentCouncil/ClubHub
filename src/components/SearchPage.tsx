@@ -263,17 +263,24 @@ function SearchPage({ allClubs, basePath = "", usePagefind = true, year = 2026 }
         }
     }, [selectedClub, isClient]);
 
+    /** 沒有本年度資料（沿用往年）的社團一律排到最後，其餘維持原本順序 */
+    const sortStaleLast = useCallback(
+        <T extends ClubData>(clubs: T[]): T[] =>
+            [...clubs].sort((a, b) => Number(a.dataYear !== year) - Number(b.dataYear !== year)),
+        [year]
+    );
+
     const clubsToDisplay = useMemo(() => {
         if (viewMode === "favorites") {
             const favoriteClubs = allClubs.filter((club) => favorites.has(club.clubCode));
 
             if (isSearching) {
-                return searchResults.filter((club) => favorites.has(club.clubCode));
+                return sortStaleLast(searchResults.filter((club) => favorites.has(club.clubCode)));
             }
-            return favoriteClubs;
+            return sortStaleLast(favoriteClubs);
         }
-        return isSearching ? searchResults : allClubs;
-    }, [viewMode, favorites, isSearching, searchResults, allClubs]);
+        return sortStaleLast(isSearching ? searchResults : allClubs);
+    }, [viewMode, favorites, isSearching, searchResults, allClubs, sortStaleLast]);
 
     useEffect(() => {
         const updateFilters = async () => {
